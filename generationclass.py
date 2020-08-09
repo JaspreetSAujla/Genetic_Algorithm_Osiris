@@ -4,6 +4,7 @@ import copy
 import matplotlib.pyplot as plt
 import random
 from individualclass import Individual
+import operator
 
 class Generation:
     """
@@ -22,6 +23,7 @@ class Generation:
         self.p_4 = list(range(0, 6))
         self.ran_num_list = list(range(-2, 4))
         self.population = []
+        self.newborn = []
         print("Generation created.")
 
     #This method prints the generation number when called.
@@ -42,18 +44,33 @@ class Generation:
             print(f"Sim {i+1}:")
             print(f"{self.population[i]}")
 
-    #Increases Generation number for the class.
-    #Works out the new variables.
-    def mating_stage(self):
-        self.gen += 1
-        #Loops through individuals.
-        for i in range(len(self.population)):
-            #Loops through each parameter and changes it.
-            for j in range(len(self.population[0].parameter_list)):
-                self.population[i].parameter_list[j] += random.choice(self.ran_num_list)
-            self.population[i].merit_calc()
-
     #This creates a new population based on the previous one.
     #Will be used for gen1 and above.
-    def repopulate(self, PreviousPop):
-        self.population = PreviousPop
+    def repopulate(self, NewPop):
+        self.population = NewPop
+
+    #Performs mating stage using genetic alogirthm.
+    #Takes top 50% and randomly switches their parameters.
+    def mating_stage(self):
+        top50 = []
+        #List comprehension to make right sized list.
+        parameter_mixing_list = [[] for i in range(len(self.population[0].parameter_list))]
+
+        #Key takes a function.
+        #operator.attrgetter = '.' as in self.merit.
+        #Reverse makes it highest to lowest.
+        self.population.sort(key=operator.attrgetter('merit'), reverse=True)
+        for i in range(int(len(self.population)/ 2)):
+            top50.append(self.population[i])
+            self.newborn.append(self.population[i])
+            for j in range(len(top50[0].parameter_list)):
+                #Puts p_(1)'s in one sublist, p_(2)'s in another sublist etc.
+                parameter_mixing_list[j].append(top50[i].parameter_list[j])
+            
+        #Appends 50% new individuals with random attributes from top50.
+        for i in range(len(top50)):
+            self.newborn.append(Individual(random.choice(parameter_mixing_list[0]), 
+                                           random.choice(parameter_mixing_list[1]),
+                                           random.choice(parameter_mixing_list[2]),
+                                           random.choice(parameter_mixing_list[3])))
+

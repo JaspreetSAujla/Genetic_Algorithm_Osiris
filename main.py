@@ -6,6 +6,7 @@ import numpy as np
 #from IndividualsClass import Individuals
 from generationclass import Generation
 from PlottingFile import data_plotter, data_saver
+import operator
 
 
 if __name__ == "__main__":
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     gen_list = []
     new_gen = True
     current_gen = 0
-    max_gen = 5                   #Will have that many gens, eg. 4 = 4 gens (0-3)
+    max_gen = 20                   #Will have that many gens, eg. 4 = 4 gens (0-3)
     
     gen_x_axis = []
     merit_y_axis = []
@@ -28,7 +29,7 @@ if __name__ == "__main__":
             if i == 0:
                 gen_list[i].populate()
             else:
-                gen_list[i].repopulate(gen_list[i-1].population)
+                gen_list[i].repopulate(gen_list[i-1].newborn)
             data_saver(gen_list[i], gen_x_axis, merit_y_axis, data)
             gen_list[i].output_current_status()
             data_plotter(gen_x_axis, merit_y_axis)
@@ -41,6 +42,10 @@ if __name__ == "__main__":
                 pass
             else:
                 new_gen = False
+                #Tells the user what the maximum merit achieved was.
+                gen_list[i].population.sort(key=operator.attrgetter('merit'), reverse=True)
+                print("The best simulation parameters achieved were:")
+                print(gen_list[i].population[0])
                 break
 
     #Saves the data into a file.
