@@ -80,10 +80,12 @@ class Generation:
         #Saves computational space and time.
         for i in range(len(top50)):
             add_to_history = True
-            new_individual = Individual(random.choice(parameter_mixing_list[0]), 
-                                        random.choice(parameter_mixing_list[1]),
-                                        random.choice(parameter_mixing_list[2]),
-                                        random.choice(parameter_mixing_list[3]))
+            for j in range(len(parameter_mixing_list)):
+                random.shuffle(parameter_mixing_list[j])
+            new_individual = Individual(parameter_mixing_list[0].pop(), 
+                                        parameter_mixing_list[1].pop(),
+                                        parameter_mixing_list[2].pop(),
+                                        parameter_mixing_list[3].pop())
             for j in range(len(history)):
                 if new_individual.parameter_list == history[j].parameter_list:
                     new_individual = copy.deepcopy(history[j])
