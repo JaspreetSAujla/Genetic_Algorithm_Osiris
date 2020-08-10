@@ -1,8 +1,4 @@
-#import numpy as np
-#import math
-#import copy
-#import matplotlib.pyplot as plt
-#import random
+#import something if you need to.
 
 class Individual:
     """
@@ -13,7 +9,7 @@ class Individual:
 
     def __init__(self, *ParameterList):
         self.parameter_list = list(ParameterList)
-        self.merit = sum(self.parameter_list)
+        self.merit = None
         #print("Individual created.")
 
     #This method prints the parameters and the merit of each individual when called.

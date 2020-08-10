@@ -1,9 +1,4 @@
 import numpy as np
-#import math
-#import copy
-#import matplotlib.pyplot as plt
-#import random
-#from IndividualsClass import Individuals
 from generationclass import Generation
 from PlottingFile import data_plotter, data_saver
 import operator
@@ -14,7 +9,8 @@ if __name__ == "__main__":
     gen_list = []
     new_gen = True
     current_gen = 0
-    max_gen = 20                   #Will have that many gens, eg. 4 = 4 gens (0-3)
+    max_gen = 12                   #Will have that many gens, eg. 4 = 4 gens (0-3)
+    individuals_history = []
     
     gen_x_axis = []
     merit_y_axis = []
@@ -27,13 +23,13 @@ if __name__ == "__main__":
         for i in range(max_gen):
             gen_list.append(Generation(gen=current_gen))
             if i == 0:
-                gen_list[i].populate()
+                gen_list[i].populate(individuals_history)
             else:
                 gen_list[i].repopulate(gen_list[i-1].newborn)
             data_saver(gen_list[i], gen_x_axis, merit_y_axis, data)
             gen_list[i].output_current_status()
             data_plotter(gen_x_axis, merit_y_axis)
-            gen_list[i].mating_stage()
+            gen_list[i].mating_stage(individuals_history)
             current_gen += 1
             
             #Checks if the limit for the gens has been reached.

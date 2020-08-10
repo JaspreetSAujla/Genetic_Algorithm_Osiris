@@ -1,5 +1,3 @@
-#import numpy as np
-#import math
 import copy
 import matplotlib.pyplot as plt
 import random
@@ -21,7 +19,6 @@ class Generation:
         self.p_2 = list(range(0, 6))
         self.p_3 = list(range(0, 6))
         self.p_4 = list(range(0, 6))
-        self.ran_num_list = list(range(-2, 4))
         self.population = []
         self.newborn = []
         print("Generation created.")
@@ -32,9 +29,14 @@ class Generation:
 
     #This method populates the generation.
     #Only for gen 0.
-    def populate(self):
+    def populate(self, history):
         for indiv in range(self.num):
             self.population.append(Individual(random.choice(self.p_1), random.choice(self.p_2), random.choice(self.p_3), random.choice(self.p_4)))
+        #Calculates the merit for each individual.
+        #Appends to history so we can keep track of parameters used.
+        for i in range(len(self.population)):
+            self.population[i].merit_calc()
+            history.append(copy.deepcopy(self.population[i]))
         print("Generation populated.")
 
     #Prints the current progress of the algorithm.
@@ -48,10 +50,15 @@ class Generation:
     #Will be used for gen1 and above.
     def repopulate(self, NewPop):
         self.population = NewPop
+        #Checks if there is a merit value already.
+        #Calculates merit for new individuals.
+        for i in range(len(self.population)):
+            if self.population[i].merit == None:
+                self.population[i].merit_calc()
 
     #Performs mating stage using genetic alogirthm.
     #Takes top 50% and randomly switches their parameters.
-    def mating_stage(self):
+    def mating_stage(self, history):
         top50 = []
         #List comprehension to make right sized list.
         parameter_mixing_list = [[] for i in range(len(self.population[0].parameter_list))]
@@ -66,11 +73,22 @@ class Generation:
             for j in range(len(top50[0].parameter_list)):
                 #Puts p_(1)'s in one sublist, p_(2)'s in another sublist etc.
                 parameter_mixing_list[j].append(top50[i].parameter_list[j])
-            
-        #Appends 50% new individuals with random attributes from top50.
+        
+        #Creates new individual.
+        #Checks if it has been used already.
+        #If it is a repeat, it takes the merit from the repeat so it is not recalculated.
+        #Saves computational space and time.
         for i in range(len(top50)):
-            self.newborn.append(Individual(random.choice(parameter_mixing_list[0]), 
-                                           random.choice(parameter_mixing_list[1]),
-                                           random.choice(parameter_mixing_list[2]),
-                                           random.choice(parameter_mixing_list[3])))
-
+            add_to_history = True
+            new_individual = Individual(random.choice(parameter_mixing_list[0]), 
+                                        random.choice(parameter_mixing_list[1]),
+                                        random.choice(parameter_mixing_list[2]),
+                                        random.choice(parameter_mixing_list[3]))
+            for j in range(len(history)):
+                if new_individual.parameter_list == history[j].parameter_list:
+                    new_individual = copy.deepcopy(history[j])
+                    add_to_history = False
+                    break
+            if add_to_history == True:
+                history.append(copy.deepcopy(new_individual))
+            self.newborn.append(copy.deepcopy(new_individual))
