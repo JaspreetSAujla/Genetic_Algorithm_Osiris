@@ -11,7 +11,7 @@ class Generation:
     Once the individuals are created, they are put into a population list.
     """
 
-    def __init__(self, gen=0, num=10, mutation=[1, 0, 0, 0, 0]):
+    def __init__(self, gen=0, num=10, mutation=2):
         self.gen = gen                  # Generation number
         self.num = num                  # Number of individuals per generation
         self.mutation = mutation        # Rate of mutation
@@ -85,16 +85,16 @@ class Generation:
                 #Puts p_(1)'s in one sublist, p_(2)'s in another sublist etc.
                 self.parameter_mixing_list[j].append(top50[i].parameter_list[j])
         for i in range(len(top50)):
-            chance_of_mutation = random.choice(self.mutation)
-            if chance_of_mutation == 1:
+            chance_of_mutation = random.choice(range(0, 11))
+            if chance_of_mutation <= self.mutation:
                 self.mutation_stage(history)
             else:
                 self.crossover_stage(history)
         #Caps mutation rate at 60%
-        if len(self.mutation) == 10:
+        if self.mutation == 6:
             pass
         else:
-            self.mutation.append(1)
+            self.mutation += 1
 
 
     #Creates new individual.
@@ -117,10 +117,29 @@ class Generation:
 
     #Performs the mutation.
     def mutation_stage(self, history):
-        new_individual = Individual(random.choice(self.p_1),
-                                    random.choice(self.p_2),
-                                    random.choice(self.p_3),
-                                    random.choice(self.p_4))
+        mutation_parameter = random.choice(range(len(self.parameter_mixing_list)))
+        for j in range(len(self.parameter_mixing_list)):
+            random.shuffle(self.parameter_mixing_list[j])
+        if mutation_parameter == 0:
+            new_individual = Individual(random.choice(self.p_1),
+                                        self.parameter_mixing_list[1].pop(),
+                                        self.parameter_mixing_list[2].pop(),
+                                        self.parameter_mixing_list[3].pop())
+        elif mutation_parameter == 1:
+            new_individual = Individual(self.parameter_mixing_list[0].pop(),
+                                        random.choice(self.p_2),
+                                        self.parameter_mixing_list[2].pop(),
+                                        self.parameter_mixing_list[3].pop())
+        elif mutation_parameter == 2:
+            new_individual = Individual(self.parameter_mixing_list[0].pop(),
+                                        self.parameter_mixing_list[1].pop(),
+                                        random.choice(self.p_3),
+                                        self.parameter_mixing_list[3].pop())
+        elif mutation_parameter == 3:
+            new_individual = Individual(self.parameter_mixing_list[0].pop(),
+                                        self.parameter_mixing_list[1].pop(),
+                                        self.parameter_mixing_list[2].pop(),
+                                        random.choice(self.p_4))
         for j in range(len(history)):
             if new_individual.parameter_list == history[j].parameter_list:
                 new_individual = copy.deepcopy(history[j])
