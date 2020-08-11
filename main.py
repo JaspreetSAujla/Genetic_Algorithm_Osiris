@@ -9,7 +9,7 @@ if __name__ == "__main__":
     gen_list = []
     new_gen = True
     current_gen = 0
-    max_gen = 12                   #Will have that many gens, eg. 4 = 4 gens (0-3)
+    max_gen = 21                   #Will have that many gens, eg. 4 = 4 gens (0-3)
     individuals_history = []
     
     gen_x_axis = []
@@ -21,10 +21,11 @@ if __name__ == "__main__":
 
         #Keeps looping as new gens get added.
         for i in range(max_gen):
-            gen_list.append(Generation(gen=current_gen))
             if i == 0:
+                gen_list.append(Generation(gen=current_gen))
                 gen_list[i].populate(individuals_history)
             else:
+                gen_list.append(Generation(gen=current_gen, mutation=gen_list[i-1].mutation))
                 gen_list[i].repopulate(gen_list[i-1].newborn, individuals_history)
             data_saver(gen_list[i], gen_x_axis, merit_y_axis, data)
             gen_list[i].output_current_status()

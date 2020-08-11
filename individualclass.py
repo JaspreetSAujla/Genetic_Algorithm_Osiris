@@ -23,3 +23,8 @@ class Individual:
     def merit_calc(self):
         self.merit = sum(self.parameter_list)
         #print(self.merit)
+
+    #Test for mutation using average approach.
+    def merit_calc_test(self):
+        self.merit = -(self.parameter_list[0] - 4)**2 + 10
+        

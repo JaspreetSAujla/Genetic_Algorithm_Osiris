@@ -11,14 +11,15 @@ class Generation:
     Once the individuals are created, they are put into a population list.
     """
 
-    def __init__(self, gen=0, num=10, mutation=0):
+    def __init__(self, gen=0, num=10, mutation=[1, 0, 0, 0, 0]):
         self.gen = gen                  # Generation number
         self.num = num                  # Number of individuals per generation
         self.mutation = mutation        # Rate of mutation
-        self.p_1 = list(range(0, 6))
-        self.p_2 = list(range(0, 6))
-        self.p_3 = list(range(0, 6))
-        self.p_4 = list(range(0, 6))
+        self.p_1 = list(range(0, 26))
+        self.p_2 = list(range(0, 26))
+        self.p_3 = list(range(0, 26))
+        self.p_4 = list(range(0, 26))
+        #self.p_test = [0, 1, 3, 6, 7, 9, 11, 12]
         self.population = []
         self.parameter_mixing_list = []
         self.newborn = []
@@ -34,7 +35,10 @@ class Generation:
     #Only for gen 0.
     def populate(self, history):
         for indiv in range(self.num):
-            self.population.append(Individual(random.choice(self.p_1), random.choice(self.p_2), random.choice(self.p_3), random.choice(self.p_4)))
+            self.population.append(Individual(random.choice(self.p_1),
+                                              random.choice(self.p_2),
+                                              random.choice(self.p_3),
+                                              random.choice(self.p_4)))
         #Calculates the merit for each individual.
         #Appends to history so we can keep track of parameters used.
         for i in range(len(self.population)):
@@ -80,23 +84,45 @@ class Generation:
             for j in range(len(top50[0].parameter_list)):
                 #Puts p_(1)'s in one sublist, p_(2)'s in another sublist etc.
                 self.parameter_mixing_list[j].append(top50[i].parameter_list[j])
-        self.crossover(top50, history)
+        for i in range(len(top50)):
+            chance_of_mutation = random.choice(self.mutation)
+            if chance_of_mutation == 1:
+                self.mutation_stage(history)
+            else:
+                self.crossover_stage(history)
+        #Caps mutation rate at 60%
+        if len(self.mutation) == 10:
+            pass
+        else:
+            self.mutation.append(1)
 
 
     #Creates new individual.
     #Checks if it has been used already.
     #If it is a repeat, it takes the merit from the repeat so it is not recalculated.
     #Saves computational space and time.   
-    def crossover(self, top50, history):
-        for i in range(len(top50)):
-            for j in range(len(self.parameter_mixing_list)):
-                random.shuffle(self.parameter_mixing_list[j])
-            new_individual = Individual(self.parameter_mixing_list[0].pop(), 
-                                        self.parameter_mixing_list[1].pop(),
-                                        self.parameter_mixing_list[2].pop(),
-                                        self.parameter_mixing_list[3].pop())
-            for j in range(len(history)):
-                if new_individual.parameter_list == history[j].parameter_list:
-                    new_individual = copy.deepcopy(history[j])
-                    break
-            self.newborn.append(copy.deepcopy(new_individual))
+    def crossover_stage(self, history):
+        for j in range(len(self.parameter_mixing_list)):
+            random.shuffle(self.parameter_mixing_list[j])
+        new_individual = Individual(self.parameter_mixing_list[0].pop(), 
+                                    self.parameter_mixing_list[1].pop(),
+                                    self.parameter_mixing_list[2].pop(),
+                                    self.parameter_mixing_list[3].pop())
+        for j in range(len(history)):
+            if new_individual.parameter_list == history[j].parameter_list:
+                new_individual = copy.deepcopy(history[j])
+                break
+        self.newborn.append(copy.deepcopy(new_individual))
+
+
+    #Performs the mutation.
+    def mutation_stage(self, history):
+        new_individual = Individual(random.choice(self.p_1),
+                                    random.choice(self.p_2),
+                                    random.choice(self.p_3),
+                                    random.choice(self.p_4))
+        for j in range(len(history)):
+            if new_individual.parameter_list == history[j].parameter_list:
+                new_individual = copy.deepcopy(history[j])
+                break
+        self.newborn.append(copy.deepcopy(new_individual))    
