@@ -25,7 +25,8 @@ def data_plotter(gen_x_axis, merit_y_axis):
         pass
     x_axis = np.array(gen_x_axis)              #This avoids type error.
     b, m = polyfit(x_axis, merit_y_axis, 1)
-    plt.xticks(x_axis)
+    label_x_axis = list(range(0, len(x_axis), 3))
+    plt.xticks(label_x_axis)
     plt.plot(x_axis, merit_y_axis, 'o')
     plt.plot(x_axis, b + (m*x_axis), '-')
     plt.xlabel("Generation Number")
