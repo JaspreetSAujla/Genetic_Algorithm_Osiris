@@ -25,7 +25,7 @@ if __name__ == "__main__":
             if i == 0:
                 gen_list[i].populate(individuals_history)
             else:
-                gen_list[i].repopulate(gen_list[i-1].newborn)
+                gen_list[i].repopulate(gen_list[i-1].newborn, individuals_history)
             data_saver(gen_list[i], gen_x_axis, merit_y_axis, data)
             gen_list[i].output_current_status()
             data_plotter(gen_x_axis, merit_y_axis)
@@ -43,6 +43,6 @@ if __name__ == "__main__":
                 print("The best simulation parameters achieved were:")
                 print(gen_list[i].population[0])
                 break
-
-    #Saves the data into a file.
-    np.save("GAData", data, allow_pickle=True)   
+    
+#Saves the data into a file.
+np.save("GAData", data, allow_pickle=True)   
