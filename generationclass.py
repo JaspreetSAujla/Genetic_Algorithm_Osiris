@@ -77,7 +77,7 @@ class Generation:
         #Key takes a function.
         #operator.attrgetter = '.' as in self.merit.
         #Reverse makes it highest to lowest.
-        self.population.sort(key=operator.attrgetter('merit'), reverse=True)
+        self.population.sort(key=operator.attrgetter('merit'), reverse=False)
         for i in range(int(len(self.population)/ 2)):
             top50.append(self.population[i])
             self.newborn.append(self.population[i])

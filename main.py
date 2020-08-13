@@ -10,7 +10,7 @@ if __name__ == "__main__":
     gen_list = []
     new_gen = True
     current_gen = 0
-    max_gen = 21                   #Will have that many gens, eg. 4 = 4 gens (0-3)
+    max_gen = 51                   #Will have that many gens, eg. 4 = 4 gens (0-3)
     individuals_history = []
     
     gen_x_axis = []
@@ -44,7 +44,7 @@ if __name__ == "__main__":
             else:
                 new_gen = False
                 #Tells the user what the maximum merit achieved was.
-                gen_list[i].population.sort(key=operator.attrgetter('merit'), reverse=True)
+                gen_list[i].population.sort(key=operator.attrgetter('merit'), reverse=False)
                 print("The best simulation parameters achieved were:")
                 print(gen_list[i].population[0])
                 break
