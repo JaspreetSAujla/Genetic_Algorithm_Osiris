@@ -42,7 +42,7 @@ class Individual:
     def change_file(self, input_file):
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        change1 = read_file.replace('a0           =  ', f'a0           =  {self.parameter_list[0]}')
+        change1 = read_file.replace('density         = ', f'density         = {self.parameter_list[0]}')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(change1)
@@ -50,7 +50,7 @@ class Individual:
 
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        change2 = read_file.replace('omega0       =  ', f'omega0       =  {self.parameter_list[1]}')
+        change2 = read_file.replace('per_w0       =  ', f'per_w0       =  {self.parameter_list[1]}')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(change2)
@@ -58,7 +58,7 @@ class Individual:
 
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        change3 = read_file.replace('per_w0       =  ', f'per_w0       =  {self.parameter_list[2]}')
+        change3 = read_file.replace('gauss_center(1:2) = ', f'gauss_center(1:2) = {self.parameter_list[2]}')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(change3)
@@ -121,7 +121,7 @@ class Individual:
     def reverse_change(self, input_file):
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        reverse1 = read_file.replace(f'a0           =  {self.parameter_list[0]}', 'a0           =  ')
+        reverse1 = read_file.replace(f'density         = {self.parameter_list[0]}', 'density         = ')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(reverse1)
@@ -129,7 +129,7 @@ class Individual:
 
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        reverse2 = read_file.replace(f'omega0       =  {self.parameter_list[1]}', 'omega0       =  ')
+        reverse2 = read_file.replace(f'per_w0       =  {self.parameter_list[1]}', 'per_w0       =  ')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(reverse2)
@@ -137,7 +137,7 @@ class Individual:
 
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        reverse3 = read_file.replace(f'per_w0       =  {self.parameter_list[2]}', 'per_w0       =  ')
+        reverse3 = read_file.replace(f'gauss_center(1:2) = {self.parameter_list[2]}', 'gauss_center(1:2) = ')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(reverse3)

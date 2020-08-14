@@ -107,7 +107,7 @@ udist
 profile
 {
   den_min         = 1.0d-7,
-  density         = 1.0d0,
+  density         = ,
   profile_type    = "math func",
   math_func_expr = "if(x1 <= 119.75, 0.5 * (tanh((x1)/0.6644)+1), -0.5 * (tanh((x1-239.5)/0.6644)-1))",
 }
@@ -176,7 +176,7 @@ profile
     den_min = 1.0d-7,
     density = 2.936d-3,
     profile_type = "gaussian", "gaussian",
-    gauss_center(1:2) = -39.00, 0.0,
+    gauss_center(1:2) = , 0.0,
     gauss_sigma(1:2) = 7.97, 3.99,
 }
 
@@ -216,8 +216,8 @@ diag_species
 
 zpulse 
 {
-        a0           =  ,
-        omega0       =  ,
+        a0           =  0.998,
+        omega0       =  59.11,
         pol_type     =  0,
         pol          =  0.0,
         propagation  = "forward",

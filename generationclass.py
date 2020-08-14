@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import random
 from individualclass import Individual
 import operator
+import numpy as np
 
 class Generation:
     """
@@ -15,10 +16,15 @@ class Generation:
         self.gen = gen                  # Generation number
         self.num = num                  # Number of individuals per generation
         self.mutation = mutation        # Rate of mutation
-        self.p_1 = list(range(0, 26))
-        self.p_2 = list(range(0, 26))
-        self.p_3 = list(range(0, 26))
-        self.p_4 = list(range(0, 26))
+        #Plasma Density
+        #Normalised to 5E17
+        self.p_1 = [0.1, 0.2, 1.0, 2.0, 10.0]
+        #Laser spot size, w_0
+        self.p_2 = [1.33, 1.99, 3.99, 5.32, 6.64]
+        ##Jitter distance.
+        self.p_3 = list(np.arange(-39.07, -25.91, 0.13))
+        #Laser focus.
+        self.p_4 = list(range(0, 240))
         self.population = []
         self.parameter_mixing_list = []
         self.newborn = []
