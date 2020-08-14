@@ -10,7 +10,7 @@ if __name__ == "__main__":
     gen_list = []
     new_gen = True
     current_gen = 0
-    max_gen = 51                   #Will have that many gens, eg. 4 = 4 gens (0-3)
+    max_gen = 21                   #Will have that many gens, eg. 4 = 4 gens (0-3)
     individuals_history = []
     
     gen_x_axis = []

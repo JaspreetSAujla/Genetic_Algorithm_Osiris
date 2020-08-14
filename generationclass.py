@@ -19,10 +19,10 @@ class Generation:
         self.p_2 = list(range(0, 26))
         self.p_3 = list(range(0, 26))
         self.p_4 = list(range(0, 26))
-        #self.p_test = [0, 1, 3, 6, 7, 9, 11, 12]
         self.population = []
         self.parameter_mixing_list = []
         self.newborn = []
+        self.input_file_list = [f"inputfile{i+1}.inp" for i in range(self.num)]
         print("Generation created.")
 
 
@@ -42,7 +42,7 @@ class Generation:
         #Calculates the merit for each individual.
         #Appends to history so we can keep track of parameters used.
         for i in range(len(self.population)):
-            self.population[i].merit_calc()
+            self.population[i].merit_calc(self.input_file_list[i])
             history.append(copy.deepcopy(self.population[i]))
         print("Generation populated.")
 
@@ -63,7 +63,7 @@ class Generation:
         #Calculates merit for new individuals.
         for i in range(len(self.population)):
             if self.population[i].merit == None:
-                self.population[i].merit_calc()
+                self.population[i].merit_calc(self.input_file_list[i])
                 history.append(copy.deepcopy(self.population[i]))
 
 
