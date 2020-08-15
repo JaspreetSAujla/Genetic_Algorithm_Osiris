@@ -35,6 +35,7 @@ class Individual:
         #self.run_simulation()
         #self.extract_merit()
         self.reverse_change(input_file)
+        #The self.merit can be deleted once you have the self.extract_merit method working.
         self.merit = sum(self.parameter_list)
 
 
