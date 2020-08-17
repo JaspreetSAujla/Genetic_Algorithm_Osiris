@@ -43,34 +43,13 @@ class Individual:
     def change_file(self, input_file):
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        change1 = read_file.replace('density         = ', f'density         = {self.parameter_list[0]}')
+        change1 = read_file.replace('density         = ', f'density         = {self.parameter_list[0]}').replace(
+                                    'per_w0       =  ', f'per_w0       =  {self.parameter_list[1]}').replace(
+                                    'gauss_center(1:2) = ', f'gauss_center(1:2) = {self.parameter_list[2]}').replace(
+                                    'per_focus    =  ', f'per_focus    =  {self.parameter_list[3]}')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(change1)
-        open_file.close()
-
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        change2 = read_file.replace('per_w0       =  ', f'per_w0       =  {self.parameter_list[1]}')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(change2)
-        open_file.close()
-
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        change3 = read_file.replace('gauss_center(1:2) = ', f'gauss_center(1:2) = {self.parameter_list[2]}')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(change3)
-        open_file.close()
-
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        change4 = read_file.replace('per_focus    =  ', f'per_focus    =  {self.parameter_list[3]}')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(change4)
         open_file.close()
 
 
@@ -122,34 +101,11 @@ class Individual:
     def reverse_change(self, input_file):
         open_file = open(input_file, "rt")
         read_file = open_file.read()
-        reverse1 = read_file.replace(f'density         = {self.parameter_list[0]}', 'density         = ')
+        reverse1 = read_file.replace(f'density         = {self.parameter_list[0]}', 'density         = ').replace(
+                                     f'per_w0       =  {self.parameter_list[1]}', 'per_w0       =  ').replace(
+                                     f'gauss_center(1:2) = {self.parameter_list[2]}', 'gauss_center(1:2) = ').replace(
+                                     f'per_focus    =  {self.parameter_list[3]}', 'per_focus    =  ')
         open_file.close()
         open_file = open(input_file, "wt")
         open_file.write(reverse1)
         open_file.close()
-
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        reverse2 = read_file.replace(f'per_w0       =  {self.parameter_list[1]}', 'per_w0       =  ')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(reverse2)
-        open_file.close()
-
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        reverse3 = read_file.replace(f'gauss_center(1:2) = {self.parameter_list[2]}', 'gauss_center(1:2) = ')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(reverse3)
-        open_file.close()
-
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        reverse4 = read_file.replace(f'per_focus    =  {self.parameter_list[3]}', 'per_focus    =  ')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(reverse4)
-        open_file.close()
-
-        
