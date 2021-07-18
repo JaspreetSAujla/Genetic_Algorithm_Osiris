@@ -9,13 +9,13 @@ from scipy import interpolate
 #Saves the data into lists to be plotted and saved.
 def data_saver(gen_in_list, gen_x_axis, merit_y_axis, data, merit_smoothing, gen_smoothing):
     item_in_data = []
-    item_in_data.append(gen_in_list.gen)
-    gen_smoothing.append(gen_in_list.gen)
+    item_in_data.append(gen_in_list.generation)
+    gen_smoothing.append(gen_in_list.generation)
     for i in range(len(gen_in_list.population)):
-        gen_x_axis.append(gen_in_list.gen)
+        gen_x_axis.append(gen_in_list.generation)
         item_in_data.append(gen_in_list.population[i])
         merit_y_axis.append(gen_in_list.population[i].merit)
-        merit_smoothing[gen_in_list.gen].append(gen_in_list.population[i].merit)
+        merit_smoothing[gen_in_list.generation].append(gen_in_list.population[i].merit)
     data.append(copy.deepcopy(item_in_data))
 
 
@@ -48,4 +48,3 @@ def data_plotter(gen_x_axis, merit_y_axis, gen_smoothing, merit_smoothing):
     plt.ylabel("Merit")
     plt.title("Progression of the Merit as Generation Number Increases.")
     plt.savefig("MeritProgression.png")
-

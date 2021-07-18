@@ -25,11 +25,11 @@ if __name__ == "__main__":
         #Keeps looping as new gens get added.
         for i in range(max_gen):
             if i == 0:
-                gen_list.append(Generation(gen=current_gen))
+                gen_list.append(Generation(Generation=current_gen))
                 gen_list[i].populate(individuals_history)
                 merit_smoothing = [[] for i in range(max_gen)]
             else:
-                gen_list.append(Generation(gen=current_gen, mutation=gen_list[i-1].mutation))
+                gen_list.append(Generation(Generation=current_gen, MutationRate=gen_list[i-1].mutation_rate))
                 gen_list[i].repopulate(gen_list[i-1].newborn, individuals_history)
             data_saver(gen_list[i], gen_x_axis, merit_y_axis, data, merit_smoothing, gen_smoothing)
             gen_list[i].output_current_status()

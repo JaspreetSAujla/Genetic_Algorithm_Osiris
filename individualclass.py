@@ -86,6 +86,7 @@ class Individual:
         # For loop used to cycle through all the parameters.
         for i in range(len(self.parameter_list)):
             print(f"Parameter {i+1}: {self.parameter_list[i]}")
+
         print(f"Merit: {self.merit}")
         return f""
 
