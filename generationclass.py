@@ -1,9 +1,9 @@
 import copy
-#import matplotlib.pyplot as plt
 import random
 from individualclass import Individual
 import operator
 import numpy as np
+import json
 
 class Generation:
     """
@@ -21,15 +21,48 @@ class Generation:
         Generation = Stores the current generation number. Set to 0 by 
                      default.
         
-        NumOfIndividuals = Stores the number of individuals that need 
-                           to be generated for each generation. Set 
-                           to 10 by default.
-        
         MutationRate = Stores the mutation rate for each generation. 
                        Set to 2 by default, which means each 
                        individual has a 20% chance of mutating. This 
                        rate increases for each generation and is capped 
                        at 60%.
+    
+    Class Variables:
+        ga_inputs = Opens a json file that contains all the variables 
+                    that can be changed.
+        
+        parameter1 = ================ Plasma Density ================
+                     Stores a list of numbers that the plasma 
+                     density could be.
+                     This is a discrete list, not a continuous range.
+                     Normalised to 5E+17.
+        
+        parameter2 = ============ Laser Spot Size: w_0 =============
+                     Stores a list of numbers that the laser 
+                     spot size could be.
+                     This is a discrete list, not a continuous range.
+        
+        parameter3_range = Stores the minimum, maximum, and step size 
+                           for parameter 3 (Jitter Distance).
+                           This is to be used in a numpy arange function, 
+                           where each element of this list is a condition 
+                           for the arange function.
+        
+        parameter3 = =============== Jitter Distance ================
+                     Uses the parameter3_range variable to create a 
+                     list of numbers for the jitter distamce with the 
+                     correct range.
+
+        parameter4_range = Stores the minimum, maximum, and step size 
+                           for parameter 4 (Laser Focus).
+                           This is to be used in a range function, 
+                           where each element of this list is a condition 
+                           for the range function.
+        
+        parameter4 = ================= Laser Focus =================
+                     Uses the parameter4_range variable to create a 
+                     list of numbers for the laser focus with the 
+                     correct range.
     
     Methods:
         __init__ = Defines the initial variables when a generation is 
@@ -61,10 +94,17 @@ class Generation:
                          the original parameter list, which introduces 
                          a way of escaping a local minimum/maximum.
     """
+    ga_inputs = json.load(open("ga_inputs.json"))
+    parameter1 = ga_inputs['plasma_density']
+    parameter2 = ga_inputs['laser_spot_size']
+    parameter3_range = ga_inputs['jitter_distance_range']
+    parameter3 = list(np.arange(parameter3_range[0], parameter3_range[1], parameter3_range[2]))
+    parameter4_range = ga_inputs['laser_focus_range']
+    parameter4 = list(range(parameter4_range[0], parameter4_range[1], parameter4_range[2]))
 
 
 
-    def __init__(self, Generation=0, NumOfIndividuals=10, MutationRate=2):
+    def __init__(self, GenerationNum=0, MutationRate=2):
         """
         This method defines all the intial variables when a generation is 
         initialised.
@@ -74,26 +114,10 @@ class Generation:
 
             self.num_of_individuals = Stores the number of individuals 
                                       in the generation.
+                                      MAKE SURE THIS IS AN EVEN NUMBER!!!
             
             self.mutation_rate = Stores the mutation rate for the 
                                  generation.
-            
-            self.parameter1 = ============ Plasma Density ============
-                              Stores a list of numbers that the plasma 
-                              density could be.
-                              Normalised to 5E+17.
-            
-            self.parameter2 = ======== Laser Spot Size: w_0 =========
-                              Stores a list of numbers that the laser 
-                              spot size could be.
-            
-            self.parameter3 = =========== Jitter Distance ============
-                              Stores a list of numbers that the jitter 
-                              distance could be.
-            
-            self.parameter4 = ============= Laser Focus =============
-                              Stores a list of numbers that the laser 
-                              focus could be.
             
             self.population = List that stores all the individuals that 
                               are created.
@@ -109,13 +133,9 @@ class Generation:
             self.input_file_list = List that stores the name of all the 
                                    input files.
         """
-        self.generation = Generation  
-        self.num_of_individuals = NumOfIndividuals 
+        self.generation = GenerationNum
+        self.num_of_individuals = Generation.ga_inputs['num_of_individuals'] 
         self.mutation_rate = MutationRate  
-        self.parameter1 = [0.1, 0.2, 1.0, 2.0, 10.0]
-        self.parameter2 = [1.33, 1.99, 3.99, 5.32, 6.64]
-        self.parameter3 = list(np.arange(-39.07, -25.91, 0.13))
-        self.parameter4 = list(range(0, 240))
         self.population = []
         self.parameter_mixing_list = []
         self.newborn = []
@@ -144,10 +164,10 @@ class Generation:
         """
         # Use for loop to create all the individuals.
         for indiv in range(self.num_of_individuals):
-            self.population.append(Individual(random.choice(self.parameter1),
-                                              random.choice(self.parameter2),
-                                              random.choice(self.parameter3),
-                                              random.choice(self.parameter4)))
+            self.population.append(Individual(random.choice(Generation.parameter1),
+                                              random.choice(Generation.parameter2),
+                                              random.choice(Generation.parameter3),
+                                              random.choice(Generation.parameter4)))
 
         # Calculates the merit for each individual.
         # Appends to History so we can keep track of parameters used.
@@ -340,25 +360,25 @@ class Generation:
         # Depending on which parameter was picked for mutation, 
         # create a new individual.
         if mutation_parameter == 0:
-            new_individual = Individual(random.choice(self.parameter1),
+            new_individual = Individual(random.choice(Generation.parameter1),
                                         self.parameter_mixing_list[1].pop(),
                                         self.parameter_mixing_list[2].pop(),
                                         self.parameter_mixing_list[3].pop())
         elif mutation_parameter == 1:
             new_individual = Individual(self.parameter_mixing_list[0].pop(),
-                                        random.choice(self.parameter2),
+                                        random.choice(Generation.parameter2),
                                         self.parameter_mixing_list[2].pop(),
                                         self.parameter_mixing_list[3].pop())
         elif mutation_parameter == 2:
             new_individual = Individual(self.parameter_mixing_list[0].pop(),
                                         self.parameter_mixing_list[1].pop(),
-                                        random.choice(self.parameter3),
+                                        random.choice(Generation.parameter3),
                                         self.parameter_mixing_list[3].pop())
         elif mutation_parameter == 3:
             new_individual = Individual(self.parameter_mixing_list[0].pop(),
                                         self.parameter_mixing_list[1].pop(),
                                         self.parameter_mixing_list[2].pop(),
-                                        random.choice(self.parameter4))
+                                        random.choice(Generation.parameter4))
 
         # Iterate over History list to see if the individual has been 
         # used before.
