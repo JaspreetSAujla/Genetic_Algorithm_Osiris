@@ -1,7 +1,9 @@
 name: Format python code
 on: 
+  push:
+    branches: [ master ]
   schedule:
-    - cron: '45 * * * *'
+    - cron: '59 23 * * 5'
 jobs:
   autopep8:
     runs-on: ubuntu-latest
