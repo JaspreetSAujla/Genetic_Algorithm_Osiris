@@ -99,11 +99,11 @@ class Generation:
     ga_inputs = json.load(open("ga_inputs.json"))
 
     parameter1 = ga_inputs['plasma_density']
-    
+
     parameter2 = ga_inputs['laser_spot_size']
-    
+
     parameter3 = ga_inputs['jitter_distance_range']
-    
+
     parameter4 = ga_inputs['laser_focus_range']
 
     def __init__(self, GenerationNum=0, MutationRate=0.1):
@@ -167,8 +167,8 @@ class Generation:
                 Individual(
                     random.choice(
                         Generation.parameter1), random.choice(
-                        Generation.parameter2),random.uniform(*Generation.parameter3), 
-                        random.uniform(*Generation.parameter4)))
+                        Generation.parameter2), random.uniform(*Generation.parameter3),
+                    random.uniform(*Generation.parameter4)))
 
         # Calculates the merit for each individual.
         # Appends to History so we can keep track of parameters used.
@@ -357,15 +357,21 @@ class Generation:
                                         self.parameter_mixing_list[2].pop(),
                                         self.parameter_mixing_list[3].pop())
         elif mutation_parameter == 2:
-            new_individual = Individual(self.parameter_mixing_list[0].pop(),
-                                        self.parameter_mixing_list[1].pop(),
-                                        random.uniform(0.8,1.2)*self.parameter_mixing_list[2].pop(),
-                                        self.parameter_mixing_list[3].pop())
+            new_individual = Individual(
+                self.parameter_mixing_list[0].pop(),
+                self.parameter_mixing_list[1].pop(),
+                random.uniform(
+                    0.8,
+                    1.2) * self.parameter_mixing_list[2].pop(),
+                self.parameter_mixing_list[3].pop())
         elif mutation_parameter == 3:
-            new_individual = Individual(self.parameter_mixing_list[0].pop(),
-                                        self.parameter_mixing_list[1].pop(),
-                                        self.parameter_mixing_list[2].pop(),
-                                        random.uniform(0.8,1.2)*self.parameter_mixing_list[3].pop())
+            new_individual = Individual(
+                self.parameter_mixing_list[0].pop(),
+                self.parameter_mixing_list[1].pop(),
+                self.parameter_mixing_list[2].pop(),
+                random.uniform(
+                    0.8,
+                    1.2) * self.parameter_mixing_list[3].pop())
 
         # Iterate over History list to see if the individual has been
         # used before.
