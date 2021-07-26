@@ -95,23 +95,18 @@ class Generation:
                          the original parameter list, which introduces
                          a way of escaping a local minimum/maximum.
     """
+    # Loads the parameters in from the json
     ga_inputs = json.load(open("ga_inputs.json"))
-    parameter1 = ga_inputs['plasma_density']
-    parameter2 = ga_inputs['laser_spot_size']
-    parameter3_range = ga_inputs['jitter_distance_range']
-    parameter3 = list(
-        np.arange(
-            parameter3_range[0],
-            parameter3_range[1],
-            parameter3_range[2]))
-    parameter4_range = ga_inputs['laser_focus_range']
-    parameter4 = list(
-        range(
-            parameter4_range[0],
-            parameter4_range[1],
-            parameter4_range[2]))
 
-    def __init__(self, GenerationNum=0, MutationRate=2):
+    parameter1 = ga_inputs['plasma_density']
+    
+    parameter2 = ga_inputs['laser_spot_size']
+    
+    parameter3 = ga_inputs['jitter_distance_range']
+    
+    parameter4 = ga_inputs['laser_focus_range']
+
+    def __init__(self, GenerationNum=0, MutationRate=0.1):
         """
         This method defines all the intial variables when a generation is
         initialised.
@@ -147,7 +142,7 @@ class Generation:
         self.parameter_mixing_list = []
         self.newborn = []
         self.input_file_list = [
-            f"./inputfiles/inputfile{i+1}.inp" for i in range(self.num_of_individuals)]
+            f"./inputfiles/inputfile{(i%9)+1}.inp" for i in range(self.num_of_individuals)]
         print("Generation created.")
 
     def __str__(self):
@@ -172,9 +167,8 @@ class Generation:
                 Individual(
                     random.choice(
                         Generation.parameter1), random.choice(
-                        Generation.parameter2), random.choice(
-                        Generation.parameter3), random.choice(
-                        Generation.parameter4)))
+                        Generation.parameter2),random.uniform(*Generation.parameter3), 
+                        random.uniform(*Generation.parameter4)))
 
         # Calculates the merit for each individual.
         # Appends to History so we can keep track of parameters used.
@@ -272,17 +266,10 @@ class Generation:
         # the crossover stage, or mating stage, depending on the chance of
         # mutation.
         for i in range(len(top50)):
-            chance_of_mutation = random.choice(range(0, 11))
-            if chance_of_mutation <= self.mutation_rate:
+            if np.random.random() <= self.mutation_rate:
                 self.mutation_stage(History)
             else:
                 self.crossover_stage(History)
-
-        # Caps mutation rate at 60%
-        if self.mutation_rate == 6:
-            pass
-        else:
-            self.mutation_rate += 1
 
     def crossover_stage(self, History):
         """
@@ -372,13 +359,13 @@ class Generation:
         elif mutation_parameter == 2:
             new_individual = Individual(self.parameter_mixing_list[0].pop(),
                                         self.parameter_mixing_list[1].pop(),
-                                        random.choice(Generation.parameter3),
+                                        random.uniform(0.8,1.2)*self.parameter_mixing_list[2].pop(),
                                         self.parameter_mixing_list[3].pop())
         elif mutation_parameter == 3:
             new_individual = Individual(self.parameter_mixing_list[0].pop(),
                                         self.parameter_mixing_list[1].pop(),
                                         self.parameter_mixing_list[2].pop(),
-                                        random.choice(Generation.parameter4))
+                                        random.uniform(0.8,1.2)*self.parameter_mixing_list[3].pop())
 
         # Iterate over History list to see if the individual has been
         # used before.
