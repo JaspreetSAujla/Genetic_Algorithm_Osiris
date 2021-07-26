@@ -147,7 +147,7 @@ class Generation:
         self.parameter_mixing_list = []
         self.newborn = []
         self.input_file_list = [
-            f"inputfile{i+1}.inp" for i in range(self.num_of_individuals)]
+            f"./inputfiles/inputfile{i+1}.inp" for i in range(self.num_of_individuals)]
         print("Generation created.")
 
     def __str__(self):
