@@ -3,8 +3,8 @@
 "System":
 
 	{
-	
-	"window_dimensions": [3e-3,2.5e-4,2.5e-5],
+	"cores_per_node": 128,
+	"window_dimensions": [3e-3,2.5e-4],
 	"simulation_length": 9.3e-3,
 	"ndump": 0,
 	"timesteps": 0
