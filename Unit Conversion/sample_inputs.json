@@ -3,12 +3,9 @@
 "System":
 
 	{
-	"cores_per_node": 128,
-	"window_dimensions": [3e-3,2.5e-4],
-	"simulation_length": 9.3e-3,
-	"ndump": 0,
-	"timesteps": 0
-
+	"cores_per_node": 24,
+	"window_dimensions": [15072,600],
+	"simulation_length": 9.3e-3
 	},
 
 "Plasma":

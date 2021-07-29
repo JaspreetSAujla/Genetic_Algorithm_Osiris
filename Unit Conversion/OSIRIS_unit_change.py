@@ -55,7 +55,7 @@ elif dimension == 2:
     SystemOSI['cores_per_dim'] = [nx(System['window_dimensions'][0],Laser['wavelength']), ny(System['window_dimensions'][1],Plasma['density'])]
 
 SystemOSI['simulation_length'] = System['simulation_length'] / skin_depth(Plasma['density'])
-SystemOSI['dt'] = 0.99 * math.sqrt(sum(map(lambda x: x*x, SystemOSI['dimension_steps']))) # Annoyingly, I can't use timestep() for this easily, so this is the alternative. It also has a discrepancy from the spreadsheet
+SystemOSI['dt'] = 0.99 / math.sqrt(sum(map(lambda x: 1 / (x*x), SystemOSI['dimension_steps']))) # Annoyingly, I can't use timestep() for this easily, so this is the alternative. It also has a discrepancy from the spreadsheet
 SystemOSI['timesteps'] = SystemOSI['simulation_length'] / SystemOSI['dt']
 SystemOSI['ndump'] = SystemOSI['timesteps'] / 100 # Also annoyingly, can't use ndump() for this either
 
