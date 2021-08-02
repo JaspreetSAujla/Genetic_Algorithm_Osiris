@@ -1,12 +1,12 @@
 from constitutive_rels import skin_depth
-from scipy.constants import e,c,mu_0 as mu0,epsilon_0 as eps0
+from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0
 import math
 
 if __name__ == "__main__":
 
     print("\nSam Close\n")
 
-    with open("logo.txt","r") as f:
+    with open("logo.txt", "r") as f:
         print(f.read())
 
     print("\nWelcome to the (unofficial) OSIRIS input config generator. You will be asked a series of questions to create a .inp file for OSIRIS. \n")
@@ -305,8 +305,13 @@ if __name__ == "__main__":
     while True:
         try:
             ndump_fac = int(input("\nPlease enter the ndump_fac\n"))
-            newFile.write("ndump_fac = " + str(ndump_fac).replace("e","d") + ",\n")
-        except:
+            newFile.write(
+                "ndump_fac = " +
+                str(ndump_fac).replace(
+                    "e",
+                    "d") +
+                ",\n")
+        except BaseException:
             print("Invalid ndump_fac! Must be an integer.")
 
         try:
@@ -403,9 +408,13 @@ if __name__ == "__main__":
     while True:
         try:
             tmin, tmax = input("Please enter the time limits:\n").split()
-            newFile.write("tmin = "+str(float(tmin)).replace("e","d")+",\ntmax = " + str(float(tmax)).replace("e","d") + ",\n")
+            newFile.write("tmin = " +
+                          str(float(tmin)).replace("e", "d") +
+                          ",\ntmax = " +
+                          str(float(tmax)).replace("e", "d") +
+                          ",\n")
             break
-        except:
+        except BaseException:
             print("Must be float or int!")
 
     newFile.write("}\n")
@@ -416,46 +425,108 @@ if __name__ == "__main__":
     while True:
         try:
             smooth_type = input("Please choose the field smoothing type\n")
-            if smooth_type not in ["none","stand","local"]:
+            if smooth_type not in ["none", "stand", "local"]:
                 raise
             else:
-                newFile.write("smooth_type = " + "'" + smooth_type + "'" + ",\n")
+                newFile.write(
+                    "smooth_type = " +
+                    "'" +
+                    smooth_type +
+                    "'" +
+                    ",\n")
                 break
-        except:
+        except BaseException:
             print("Invalid smoothing type!")
 
     newFile.write("}\n")
 
     # emf_bound
     newFile.write("\nemf_bound\n{\n")
-    
-    while 1:
+
+    while True:
         try:
             if dimension == 2:
-                boundx1, boundx2, boundy1, boundy2 = input("Please clarify the boundary conditions for em-fields:\n").split()
-                newFile.write("type(1:2,1) = " + "'" + boundx1 + "', " + "'" + boundx2 + "',\n")
-                newFile.write("type(1:2,2) = " + "'" + boundy1 + "', " + "'" + boundy2 + "',\n")
+                boundx1, boundx2, boundy1, boundy2 = input(
+                    "Please clarify the boundary conditions for em-fields:\n").split()
+                newFile.write(
+                    "type(1:2,1) = " +
+                    "'" +
+                    boundx1 +
+                    "', " +
+                    "'" +
+                    boundx2 +
+                    "',\n")
+                newFile.write(
+                    "type(1:2,2) = " +
+                    "'" +
+                    boundy1 +
+                    "', " +
+                    "'" +
+                    boundy2 +
+                    "',\n")
             elif dimension == 3:
-                boundx1, boundx2, boundy1, boundy2, boundz1, boundz2 = input("Please clarify the boundary conditions for em-fields:\n").split()
-                newFile.write("type(1:3,1) = " + "'" + boundx1 + "', " + "'" + boundx2 + "',\n")
-                newFile.write("type(1:3,2) = " + "'" + boundy1 + "', " + "'" + boundy2 + "',\n")
-                newFile.write("type(1:3,3) = " + "'" + boundz1 + "', " + "'" + boundz2 + "',\n")     
+                boundx1, boundx2, boundy1, boundy2, boundz1, boundz2 = input(
+                    "Please clarify the boundary conditions for em-fields:\n").split()
+                newFile.write(
+                    "type(1:3,1) = " +
+                    "'" +
+                    boundx1 +
+                    "', " +
+                    "'" +
+                    boundx2 +
+                    "',\n")
+                newFile.write(
+                    "type(1:3,2) = " +
+                    "'" +
+                    boundy1 +
+                    "', " +
+                    "'" +
+                    boundy2 +
+                    "',\n")
+                newFile.write(
+                    "type(1:3,3) = " +
+                    "'" +
+                    boundz1 +
+                    "', " +
+                    "'" +
+                    boundz2 +
+                    "',\n")
             break
-        except:
-            print("Invalid boundary conditions!")           
+        except BaseException:
+            print("Invalid boundary conditions!")
 
     # smooth
     newFile.write("\nsmooth\n{\n")
-    while 1:
+    while True:
         try:
             if dimension == 2:
-                smoothx, smoothy = input("Please identify the type of smoothig you would like at the boundaries:\n").split()
-                newFile.write("type(1:2) = " + "'" + smoothx + "', " + "'" + smoothy + "',\n")
+                smoothx, smoothy = input(
+                    "Please identify the type of smoothig you would like at the boundaries:\n").split()
+                newFile.write(
+                    "type(1:2) = " +
+                    "'" +
+                    smoothx +
+                    "', " +
+                    "'" +
+                    smoothy +
+                    "',\n")
             elif dimension == 3:
-                smoothx, smoothy, smoothz = input("Please identify the type of smoothig you would like at the boundaries:\n").split()
-                newFile.write("type(1:3) = " + "'" + smoothx + "', " + "'" + smoothy +"'" + ", " +"'"+ smoothz + "',\n")
+                smoothx, smoothy, smoothz = input(
+                    "Please identify the type of smoothig you would like at the boundaries:\n").split()
+                newFile.write(
+                    "type(1:3) = " +
+                    "'" +
+                    smoothx +
+                    "', " +
+                    "'" +
+                    smoothy +
+                    "'" +
+                    ", " +
+                    "'" +
+                    smoothz +
+                    "',\n")
             break
-        except:
+        except BaseException:
             print("Invalid smoothing technique!")
     newFile.write("}\n")
 
