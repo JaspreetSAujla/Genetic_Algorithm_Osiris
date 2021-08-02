@@ -265,8 +265,9 @@ class Generation:
             for j in range(len(top50[0].parameter_list)):
                 self.parameter_mixing_list[j].append(
                     top50[i].parameter_list[j])
-        
-        # Creates the other individuals for the new population, by drawing characteristics from the gene pool, and mutating at random
+
+        # Creates the other individuals for the new population, by drawing
+        # characteristics from the gene pool, and mutating at random
         for i in range(len(top50)):
             self.mutation_stage(History)
 
@@ -302,10 +303,17 @@ class Generation:
 
         # Depending on which parameter was picked for mutation,
         # create a new individual.
-        new_individual = Individual(random.choice(Generation.parameter1) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[0].pop(),
-                                    random.choice(Generation.parameter2) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[1].pop(),
-                                    random.uniform(*Generation.parameter3) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[2].pop(),
-                                    random.uniform(*Generation.parameter4) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[3].pop())
+        new_individual = Individual(
+            random.choice(
+                Generation.parameter1) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[0].pop(),
+            random.choice(
+                Generation.parameter2) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[1].pop(),
+            random.uniform(
+                *
+                Generation.parameter3) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[2].pop(),
+            random.uniform(
+                    *
+                    Generation.parameter4) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[3].pop())
 
         # Iterate over History list to see if the individual has been
         # used before.

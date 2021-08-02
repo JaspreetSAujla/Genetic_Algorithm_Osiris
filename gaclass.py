@@ -9,6 +9,7 @@ import operator
 import copy
 import os
 
+
 class GeneticAlgorithm:
     """
     Class that defines a genetic algorithm object. This class is used
