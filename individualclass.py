@@ -1,6 +1,5 @@
 import h5py
 import numpy as np
-#import os
 from os import listdir
 import re
 import copy

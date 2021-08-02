@@ -1,10 +1,13 @@
+from DataAnalysis import logisticFunc
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
+from scipy.optimize.minpack import curve_fit
 from generationclass import Generation
 import operator
 import copy
-
+import os
 
 class GeneticAlgorithm:
     """
@@ -109,7 +112,7 @@ class GeneticAlgorithm:
             # Save and plot the data, output the current status, and
             # perform the mating stage.
             self.data_saver()
-            self.generation_list[i].output_current_status()
+            # self.generation_list[i].output_current_status()
             self.data_plotter()
             self.generation_list[i].mating_stage(
                 History=self.individuals_history)
@@ -194,8 +197,7 @@ class GeneticAlgorithm:
 
         # Populate the y_average list by calculating the average.
         for i in range(len(self.generation_smoothing)):
-            y_average.append(
-                sum(self.merit_smoothing[i]) / len(self.merit_smoothing[i]))
+            y_average.append(np.average(self.merit_smoothing[i]))
         plt.xticks(list(range(0, len(x_axis), 3)))
         plt.plot(x_axis, self.merit_y_axis, 'o')
 

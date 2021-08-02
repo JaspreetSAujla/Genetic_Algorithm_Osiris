@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
 
-
 def output_saved_data(data_in):
     """
     Prints the generation number, and each individual within that
@@ -107,7 +106,6 @@ def data_plotter(x_axis, y_axis, gen_smoothing):
     plt.title("Progression of the Merit as Generation Number Increases.")
     plt.savefig("MeritProgressionAnalysis.png")
     plt.show()
-
 
 if __name__ == "__main__":
     # Loads the data in as a list.

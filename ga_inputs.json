@@ -1,6 +1,7 @@
 {
-    "max_generation_number" : 20, 
-    "num_of_individuals" : 20, 
+    "max_generation_number" : 50, 
+    "num_of_individuals" : 500, 
+    "mutation_rate": 0.001,
     "plasma_density" : [0.1, 0.2, 1.0, 2.0, 10.0], 
     "laser_spot_size" : [1.33, 1.99, 3.99, 5.32, 6.64], 
     "jitter_distance_range" : [-39.07, -25.91], 

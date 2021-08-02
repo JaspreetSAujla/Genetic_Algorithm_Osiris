@@ -4,6 +4,7 @@ from individualclass import Individual
 import operator
 import numpy as np
 import json
+import os
 
 
 class Generation:
@@ -106,7 +107,7 @@ class Generation:
 
     parameter4 = ga_inputs['laser_focus_range']
 
-    def __init__(self, GenerationNum=0, MutationRate=0.1):
+    def __init__(self, GenerationNum=0):
         """
         This method defines all the intial variables when a generation is
         initialised.
@@ -137,13 +138,13 @@ class Generation:
         """
         self.generation = GenerationNum
         self.num_of_individuals = Generation.ga_inputs['num_of_individuals']
-        self.mutation_rate = MutationRate
+        self.mutation_rate = Generation.ga_inputs['mutation_rate']
         self.population = []
         self.parameter_mixing_list = []
         self.newborn = []
         self.input_file_list = [
             f"./inputfiles/inputfile{(i%9)+1}.inp" for i in range(self.num_of_individuals)]
-        print("Generation created.")
+        # print("Generation created.")
 
     def __str__(self):
         """
@@ -176,13 +177,16 @@ class Generation:
             self.population[i].merit_calc(self.input_file_list[i])
             History.append(copy.deepcopy(self.population[i]))
 
-        print("Generation populated.")
+        # print("Generation populated.")
 
     def output_current_status(self):
         """
         Prints the current progress of the algorithm.
         Uses for loop to iterate through each simulation.
         """
+
+        os.system("clear")
+
         print(self)
 
         for i in range(len(self.population)):
@@ -261,54 +265,10 @@ class Generation:
             for j in range(len(top50[0].parameter_list)):
                 self.parameter_mixing_list[j].append(
                     top50[i].parameter_list[j])
-
-        # Loops over each individual in the top50 list and performs either
-        # the crossover stage, or mating stage, depending on the chance of
-        # mutation.
+        
+        # Creates the other individuals for the new population, by drawing characteristics from the gene pool, and mutating at random
         for i in range(len(top50)):
-            if np.random.random() <= self.mutation_rate:
-                self.mutation_stage(History)
-            else:
-                self.crossover_stage(History)
-
-    def crossover_stage(self, History):
-        """
-        This method is called when there is no mutation for the individual.
-        It creates the remaining 50% of individuals by picking random
-        parameters from the parameter mixing list.
-
-        If a set of parameters has been used before to create an individual,
-        then it will grab that individual from the History list, so that
-        its merit doesn't need to be recalculated.
-        This saves computing power and time.
-
-        Parameters:
-            History = Passes in a list that stores all the previous
-                      individuals that have been used. Is used to check
-                      if the new individual already exists.
-
-        Variables:
-            new_individual = Stores the new individual that is created.
-        """
-        # Loops over each sublist in the mixing list, and shuffles
-        # the parameters.
-        for j in range(len(self.parameter_mixing_list)):
-            random.shuffle(self.parameter_mixing_list[j])
-
-        new_individual = Individual(self.parameter_mixing_list[0].pop(),
-                                    self.parameter_mixing_list[1].pop(),
-                                    self.parameter_mixing_list[2].pop(),
-                                    self.parameter_mixing_list[3].pop())
-
-        # Loops through History list to check if the new individual
-        # already exists.
-        # If it does, just reuse that individual.
-        for j in range(len(History)):
-            if new_individual.parameter_list == History[j].parameter_list:
-                new_individual = copy.deepcopy(History[j])
-                break
-
-        self.newborn.append(copy.deepcopy(new_individual))
+            self.mutation_stage(History)
 
     def mutation_stage(self, History):
         """
@@ -336,42 +296,16 @@ class Generation:
 
             new_individual = Stores the new individual that is created.
         """
-        # Randomly picks which parameter to mutate.
-        mutation_parameter = random.choice(
-            range(len(self.parameter_mixing_list)))
-
         # Shuffle each sublist in the mixing list.
         for j in range(len(self.parameter_mixing_list)):
             random.shuffle(self.parameter_mixing_list[j])
 
         # Depending on which parameter was picked for mutation,
         # create a new individual.
-        if mutation_parameter == 0:
-            new_individual = Individual(random.choice(Generation.parameter1),
-                                        self.parameter_mixing_list[1].pop(),
-                                        self.parameter_mixing_list[2].pop(),
-                                        self.parameter_mixing_list[3].pop())
-        elif mutation_parameter == 1:
-            new_individual = Individual(self.parameter_mixing_list[0].pop(),
-                                        random.choice(Generation.parameter2),
-                                        self.parameter_mixing_list[2].pop(),
-                                        self.parameter_mixing_list[3].pop())
-        elif mutation_parameter == 2:
-            new_individual = Individual(
-                self.parameter_mixing_list[0].pop(),
-                self.parameter_mixing_list[1].pop(),
-                random.uniform(
-                    0.8,
-                    1.2) * self.parameter_mixing_list[2].pop(),
-                self.parameter_mixing_list[3].pop())
-        elif mutation_parameter == 3:
-            new_individual = Individual(
-                self.parameter_mixing_list[0].pop(),
-                self.parameter_mixing_list[1].pop(),
-                self.parameter_mixing_list[2].pop(),
-                random.uniform(
-                    0.8,
-                    1.2) * self.parameter_mixing_list[3].pop())
+        new_individual = Individual(random.choice(Generation.parameter1) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[0].pop(),
+                                    random.choice(Generation.parameter2) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[1].pop(),
+                                    random.uniform(*Generation.parameter3) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[2].pop(),
+                                    random.uniform(*Generation.parameter4) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[3].pop())
 
         # Iterate over History list to see if the individual has been
         # used before.
