@@ -193,7 +193,10 @@ class Individual:
             fullfilename = dirname + '/' + f
             print(fullfilename)
             try:
-                it_new = int(re.search('RAW-Beam-(.+?).h5', fullfilename).group(1))
+                it_new = int(
+                    re.search(
+                        'RAW-Beam-(.+?).h5',
+                        fullfilename).group(1))
                 if it_new > it_old:
                     it_old = it_new
                     myfile = fullfilename
@@ -212,7 +215,7 @@ class Individual:
         ave = tot_qene / tot_charge
 
         standard_deviation = np.sqrt(sum(q * (ene - ave)**2 / tot_charge))
-        self.merit = standard_deviation/ave
+        self.merit = standard_deviation / ave
 
     def reverse_change(self, input_file):
         """

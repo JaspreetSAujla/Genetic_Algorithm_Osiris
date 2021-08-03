@@ -6,6 +6,7 @@ import numpy as np
 import json
 import os
 
+
 class Generation:
     """
     This class contains the code which performs the bulk of the genetic
@@ -166,9 +167,13 @@ class Generation:
             self.population.append(
                 Individual(
                     random.uniform(
-                        *Generation.parameter1), random.uniform(
-                        *Generation.parameter2), random.uniform(*Generation.parameter3),
-                    random.uniform(*Generation.parameter4)))
+                        *Generation.parameter1),
+                    random.uniform(
+                        *Generation.parameter2),
+                    random.uniform(
+                        *Generation.parameter3),
+                    random.uniform(
+                        *Generation.parameter4)))
 
         # Calculates the merit for each individual.
         # Appends to History so we can keep track of parameters used.
