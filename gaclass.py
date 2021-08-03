@@ -6,6 +6,7 @@ from generationclass import Generation
 import operator
 import copy
 
+
 class GeneticAlgorithm:
     """
     Class that defines a genetic algorithm object. This class is used
@@ -101,7 +102,8 @@ class GeneticAlgorithm:
                                         for i in range(self.max_generation_number)]
             else:
                 # For every other generation, use the repopulate method.
-                self.generation_list.append(Generation(GenerationNum=self.current_generation))
+                self.generation_list.append(Generation(
+                    GenerationNum=self.current_generation))
                 self.generation_list[i].repopulate(NewPop=self.generation_list[i - 1].newborn,
                                                    History=self.individuals_history)
 
