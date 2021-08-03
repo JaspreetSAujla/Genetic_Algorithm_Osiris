@@ -107,7 +107,7 @@ udist
 profile
 {
   den_min         = 1.0d-7,
-  density = 1,
+  density         = ,
   profile_type    = "math func",
   math_func_expr = "if(x1 <= 119.75, 0.5 * (tanh((x1)/0.6644)+1), -0.5 * (tanh((x1-239.5)/0.6644)-1))",
 }

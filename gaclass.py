@@ -1,5 +1,3 @@
-from DataAnalysis import logisticFunc
-import time
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
@@ -7,8 +5,6 @@ from scipy.optimize.minpack import curve_fit
 from generationclass import Generation
 import operator
 import copy
-import os
-
 
 class GeneticAlgorithm:
     """
@@ -105,8 +101,7 @@ class GeneticAlgorithm:
                                         for i in range(self.max_generation_number)]
             else:
                 # For every other generation, use the repopulate method.
-                self.generation_list.append(Generation(GenerationNum=self.current_generation,
-                                                       MutationRate=self.generation_list[i - 1].mutation_rate))
+                self.generation_list.append(Generation(GenerationNum=self.current_generation))
                 self.generation_list[i].repopulate(NewPop=self.generation_list[i - 1].newborn,
                                                    History=self.individuals_history)
 
@@ -209,7 +204,7 @@ class GeneticAlgorithm:
             f = interpolate.interp1d(x_average, y_average)
             x_fit = np.linspace(0, x_average[-1], int((x_average[-1] + 1) / 2))
             y_fit = f(x_fit)
-            plt.plot(x_fit, y_fit, '-')
+            plt.semilogy(x_fit, y_fit, '-')
 
         plt.xlabel("Generation Number")
         plt.ylabel("Merit")

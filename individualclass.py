@@ -106,12 +106,12 @@ class Individual:
             input_file = Passes in the input file that is used
                          to run the simulation.
         """
-        self.change_file(input_file)
+        # self.change_file(input_file)
         # The 2 methods below can be uncommented once the implementation
         # for the run_simulation method is complete.
         # self.run_simulation()
         # self.extract_merit()
-        self.reverse_change(input_file)
+        # self.reverse_change(input_file)
         # The self.merit on the line below can be deleted once you
         # have the extract_merit and run_simulation method working.
         self.merit = sum(self.parameter_list)
@@ -193,7 +193,7 @@ class Individual:
             fullfilename = dirname + '/' + f
             print(fullfilename)
             try:
-                it_new = int(re.search('Beam-(.+?).h5', fullfilename).group(1))
+                it_new = int(re.search('RAW-Beam-(.+?).h5', fullfilename).group(1))
                 if it_new > it_old:
                     it_old = it_new
                     myfile = fullfilename
@@ -211,8 +211,8 @@ class Individual:
         tot_charge = sum(q)
         ave = tot_qene / tot_charge
 
-        variance = np.sqrt(sum(q * (ene - ave)**2 / tot_charge))
-        self.merit = copy.deepcopy(variance)
+        standard_deviation = np.sqrt(sum(q * (ene - ave)**2 / tot_charge))
+        self.merit = standard_deviation/ave
 
     def reverse_change(self, input_file):
         """
