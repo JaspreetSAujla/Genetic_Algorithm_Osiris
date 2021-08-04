@@ -2,6 +2,7 @@ from constitutive_rels import skin_depth
 from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0, m_e
 import argparse
 import numpy as np
+import sympy as sp
 
 if __name__ == "__main__":
 
@@ -210,6 +211,12 @@ if __name__ == "__main__":
         default=0,
         type=float,
         help="specifies the constant thermal spread in velocities for this particle species in each of the directions. Momenta specified are proper velocities i.e. gamma * v in units of c.")
+
+    plasma.add_argument("--upramp",default=1,type=float,help="the length of the upramp to maximum plasma density")
+
+    plasma.add_argument("--downramp",default=1,type=float,help="the length of the downramp to minimum plasma density")
+
+    plasma.add_argument("--plasma_length",default=1,type=float,help="The length of the plasma.")
 
     # beam
 
@@ -466,8 +473,8 @@ if __name__ == "__main__":
         file.write("}\n")
 
         # diag_emf
-
-        # Jees this is a lot, come back to this [TODO]
+        file.write('\ndiag_emf ! this is all placeholder. You cannot yet change this. \n{\nndump_fac = 1,\nndump_fac_ene_int = 1,\nndump_fac_ave = 1,\nn_ave = 10,1,\nreports = "e1", "e2", "e3","b1", "b2", "b3",\n')
+        file.write("}\n")
 
         # particles
 
@@ -514,11 +521,15 @@ if __name__ == "__main__":
 
         file.write('profile_type = "math_func",\n')
 
-        file.write('math_func_expr = ,\n')  # [TODO]
+        file.write(f'math_func_expr = "if(x1 <= 119.75, 0.5 * (tanh((x1)/{args.upramp})+1), -0.5 * (tanh((x1-{args.plasma_length})/{args.downramp})-1))",\n')  # [TODO]
 
         file.write("}\n")
 
-        # need spe_bound and diag_species
+        file.write("\nspe_bound ! placeholder, cannot yet be changed.\n{\n")
+
+        file.write('type(1:2,1) = "open", "open",\ntype(1:2,2) = "open", "open",\n')
+
+        file.write("}\n")
 
         # beam electrons, real s**t
 
@@ -559,6 +570,32 @@ if __name__ == "__main__":
         file.write("}\n")
 
         # spe_bound, and diag_species
+
+        file.write('\ndiag_species\n{\n')
+
+        file.write('ndump_fac = 1,\n')
+        file.write('ndump_fac_ave = 1,\n')
+        file.write('ndump_fac_ene = 1,\n')
+        file.write('ndump_fac_pha = 1,\n')
+        file.write('n_ave(1:2) = 16, 1,\n')
+
+        file.write('reports = "charge, savg", "j1, savg", "j2, savg",\n')
+
+        file.write('ps_xmin(1:2) = -82.15, -20.60,	! xmin, ymin\n')
+        file.write('ps_xmax(1:2) = 0.0, 20.60,  ! xmax, ymax\n')
+        file.write('ps_nx(1:2)   = 966, 412,\n')
+
+        file.write('ps_np(1:2)   = 256, 256,\n')
+        file.write('if_ps_p_auto = .true.,.true.,\n')
+
+        file.write('ps_ngamma = 256,\n')
+        file.write('if_ps_gamma_auto = .true.,\n')
+
+        file.write('ndump_fac_raw = 10,\n')
+        file.write('raw_fraction = 1,\n')
+
+        file.write('phasespaces = "p1x1", "p2x1", "gx1",\n')
+        file.write("}\n")
 
         # zpulse
 
