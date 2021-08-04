@@ -212,11 +212,23 @@ if __name__ == "__main__":
         type=float,
         help="specifies the constant thermal spread in velocities for this particle species in each of the directions. Momenta specified are proper velocities i.e. gamma * v in units of c.")
 
-    plasma.add_argument("--upramp",default=1,type=float,help="the length of the upramp to maximum plasma density")
+    plasma.add_argument(
+        "--upramp",
+        default=1,
+        type=float,
+        help="the length of the upramp to maximum plasma density")
 
-    plasma.add_argument("--downramp",default=1,type=float,help="the length of the downramp to minimum plasma density")
+    plasma.add_argument(
+        "--downramp",
+        default=1,
+        type=float,
+        help="the length of the downramp to minimum plasma density")
 
-    plasma.add_argument("--plasma_length",default=1,type=float,help="The length of the plasma.")
+    plasma.add_argument(
+        "--plasma_length",
+        default=1,
+        type=float,
+        help="The length of the plasma.")
 
     # beam
 
@@ -473,7 +485,8 @@ if __name__ == "__main__":
         file.write("}\n")
 
         # diag_emf
-        file.write('\ndiag_emf ! this is all placeholder. You cannot yet change this. \n{\nndump_fac = 1,\nndump_fac_ene_int = 1,\nndump_fac_ave = 1,\nn_ave = 10,1,\nreports = "e1", "e2", "e3","b1", "b2", "b3",\n')
+        file.write(
+            '\ndiag_emf ! this is all placeholder. You cannot yet change this. \n{\nndump_fac = 1,\nndump_fac_ene_int = 1,\nndump_fac_ave = 1,\nn_ave = 10,1,\nreports = "e1", "e2", "e3","b1", "b2", "b3",\n')
         file.write("}\n")
 
         # particles
@@ -521,13 +534,15 @@ if __name__ == "__main__":
 
         file.write('profile_type = "math_func",\n')
 
-        file.write(f'math_func_expr = "if(x1 <= 119.75, 0.5 * (tanh((x1)/{args.upramp})+1), -0.5 * (tanh((x1-{args.plasma_length})/{args.downramp})-1))",\n')  # [TODO]
+        file.write(
+            f'math_func_expr = "if(x1 <= 119.75, 0.5 * (tanh((x1)/{args.upramp})+1), -0.5 * (tanh((x1-{args.plasma_length})/{args.downramp})-1))",\n')  # [TODO]
 
         file.write("}\n")
 
         file.write("\nspe_bound ! placeholder, cannot yet be changed.\n{\n")
 
-        file.write('type(1:2,1) = "open", "open",\ntype(1:2,2) = "open", "open",\n')
+        file.write(
+            'type(1:2,1) = "open", "open",\ntype(1:2,2) = "open", "open",\n')
 
         file.write("}\n")
 
