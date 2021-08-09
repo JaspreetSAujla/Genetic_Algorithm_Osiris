@@ -175,7 +175,8 @@ class Generation:
                     random.uniform(
                         *Generation.parameter4)))
 
-            os.system(f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{indiv}.inp")
+            os.system(
+                rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{indiv}.inp")
 
         # Calculates the merit for each individual.
         # Appends to History so we can keep track of parameters used.
@@ -224,8 +225,8 @@ class Generation:
                 self.population[i].merit_calc(self.input_file_list[i])
                 History.append(copy.deepcopy(self.population[i]))
 
-            os.system(f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")
-
+            os.system(
+                rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")
 
     def mating_stage(self, History):
         """
@@ -333,6 +334,7 @@ class Generation:
                 break
 
         self.newborn.append(copy.deepcopy(new_individual))
-        
+
         for i in range(self.num_of_individuals):
-            os.system(f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")
+            os.system(
+                rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")

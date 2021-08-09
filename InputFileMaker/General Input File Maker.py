@@ -60,8 +60,6 @@ if __name__ == "__main__":
             "pgc",
             "hd_hybrid"])
 
-    
-
     # Node number
 
     node_conf = parser.add_argument_group(title='node_conf')
@@ -184,7 +182,7 @@ if __name__ == "__main__":
     # plasma_electrons
 
     plasma = parser.add_argument_group(title="plasma")
-    
+
     plasma.add_argument(
         "-n0",
         "--plasma_density",
@@ -228,7 +226,11 @@ if __name__ == "__main__":
         type=float,
         help="The length of the plasma.")
 
-    plasma.add_argument("--plasma_start",default=0,type=float,help="where the plasma starts")
+    plasma.add_argument(
+        "--plasma_start",
+        default=0,
+        type=float,
+        help="where the plasma starts")
 
     # beam
 
@@ -533,17 +535,25 @@ if __name__ == "__main__":
         file.write('profile_type = "math_func",\n')
 
         def up(x):
-            return np.tanh(( args.plasma_start - x )/ args.upramp,dtype=np.longdouble)
+            return np.tanh(
+                (args.plasma_start - x) / args.upramp,
+                dtype=np.longdouble)
 
         def down(x):
-            return np.tanh(( args.plasma_start + args.plasma_length - x )/ args.downramp,dtype=np.longdouble)
+            return np.tanh(
+                (args.plasma_start +
+                 args.plasma_length -
+                 x) /
+                args.downramp,
+                dtype=np.longdouble)
 
-        def doubleSig(x,sign=-1):
-            return  np.longdouble(-1 * sign * (-1 + up(x) ) * (1 + down(x) ) / 4)
+        def doubleSig(x, sign=-1):
+            return np.longdouble(-1 * sign * (-1 + up(x)) * (1 + down(x)) / 4)
 
         num = optimize.minimize_scalar(doubleSig)
 
-        file.write(f'math_func_expr = "-1 * (-1 + tanh(({args.plasma_start} - x1) / {args.upramp}) * (1 + tanh( ({args.plasma_start + args.plasma_length} - x1) / {args.downramp}) ) / ({4 * doubleSig(num.x,sign=1)})",\n')
+        file.write(
+            f'math_func_expr = "-1 * (-1 + tanh(({args.plasma_start} - x1) / {args.upramp}) * (1 + tanh( ({args.plasma_start + args.plasma_length} - x1) / {args.downramp}) ) / ({4 * doubleSig(num.x,sign=1)})",\n')
 
         file.write("}\n")
 
