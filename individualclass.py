@@ -79,7 +79,8 @@ class Individual:
         Method returns the values of the parameters and the merit value.
         """
         # For loop used to cycle through all the parameters.
-        dataList = [f"Parameter {i+1}: {self.parameter_list[i]}" for i in range(len(self.parameter_list))]
+        dataList = [
+            f"Parameter {i+1}: {self.parameter_list[i]}" for i in range(len(self.parameter_list))]
 
         return str(dataList)
 
@@ -112,7 +113,6 @@ class Individual:
         # The self.merit on the line below can be deleted once you
         # have the extract_merit and run_simulation method working.
         self.merit = sum(self.parameter_list)
-
 
     def change_file(self, input_file):
         """

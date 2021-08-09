@@ -3,13 +3,16 @@ from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0, m_e
 import argparse
 import numpy as np
 
+
 def plasma_frequency(plasma_density):
 
     return e * np.sqrt(plasma_density / (m_e * eps0))
 
+
 def skin_depth(plasma_density):
 
     return np.sqrt(m_e / (plasma_density * mu0)) / e
+
 
 if __name__ == "__main__":
 
@@ -75,13 +78,17 @@ if __name__ == "__main__":
         "--node_number",
         type=tuple,
         help="specifies the number of nodes to use in each direction for the simulation. The total number of nodes will be the product of the number of nodes for each direction. Default is 1.",
-        default=(20,2))
+        default=(
+            20,
+            2))
 
     node_conf.add_argument(
         "--if_periodic",
         type=tuple,
         help="specifies if the boundary conditions for each direction will be periodic boundary conditions. Default is false.",
-        default=("false","false"))
+        default=(
+            "false",
+            "false"))
 
     # Key values
 
@@ -99,13 +106,15 @@ if __name__ == "__main__":
         "--boundaries",
         nargs=2,
         help="specify the lower and upper boundaries of the global simulation space at the beggining of the simulation in [m]. Default is 0.",
-        default=[(-700e-6,0),(0,200e-6)])
+        default=[(-700e-6, 0), (0, 200e-6)])
 
     space.add_argument(
         "--if_move",
         type=str,
         help="pecifies a whether the code should use a moving window at the speed of light in the specified directions. Default is false.",
-        default=("true","false"))
+        default=(
+            "true",
+            "false"))
 
     # restart
 
@@ -162,13 +171,13 @@ if __name__ == "__main__":
 
     emf_bound.add_argument(
         "--emf_type",
-        default=[["open"]*2,["axial","open"]],
+        default=[["open"] * 2, ["axial", "open"]],
         type=list,
         help="specifies the boundary conditions to use for the electro-magnetic fields. ### NOT YET FULLY IMPLEMENTED ### Default is [[vpml]*2]*2]")
 
     emf_bound.add_argument(
         "--emf_smooth_type",
-        default=("5pass","5pass"),
+        default=("5pass", "5pass"),
         type=tuple,
         help="specifies the type of smoothing to perform in each direction.")
 
@@ -183,7 +192,7 @@ if __name__ == "__main__":
     # plasma_electrons
 
     plasma = parser.add_argument_group(title="plasma")
-    
+
     plasma.add_argument(
         "-n0",
         "--plasma_density",
@@ -193,7 +202,7 @@ if __name__ == "__main__":
 
     plasma.add_argument(
         "--num_par_x",
-        default=(2,2),
+        default=(2, 2),
         type=tuple,
         help="specifies the number of particles per cell to use in each direction. The total number of particles per cell will be the product of all the components of num_par_x. Default is (2,2).")
 
@@ -221,7 +230,11 @@ if __name__ == "__main__":
         type=float,
         help="The length of the plasma.")
 
-    plasma.add_argument("--plasma_start",default=0,type=float,help="where the plasma starts")
+    plasma.add_argument(
+        "--plasma_start",
+        default=0,
+        type=float,
+        help="where the plasma starts")
 
     # beam
 
@@ -304,8 +317,17 @@ if __name__ == "__main__":
                 ")", "") + ",\n")
 
         file.write(
-            f"if_periodic(1:{args.dimension}) = " + 
-                f"{args.if_periodic}".replace("('",".").replace("')",".").replace("', '","").replace(",",".,.") +  ",\n")
+            f"if_periodic(1:{args.dimension}) = " +
+            f"{args.if_periodic}".replace(
+                "('",
+                ".").replace(
+                "')",
+                ".").replace(
+                "', '",
+                "").replace(
+                    ",",
+                    ".,.") +
+            ",\n")
 
         file.write("}\n")
         # spatial grid
@@ -322,12 +344,12 @@ if __name__ == "__main__":
         # tuples (e.g. 0,0,0 1,2,3), and take their difference into a list or
         # tuple. Please submit a commit if you can fix this to be shorter.
 
-        boundaries = [[]]*args.dimension
+        boundaries = [[]] * args.dimension
 
         for count, item in enumerate(args.boundaries):
 
             for subitem in item:
-                boundaries[count]  = list(item)
+                boundaries[count] = list(item)
 
         window_lengths = [abs(boundaries[1][i] - boundaries[0][i])
                           for i in range(args.dimension)]
@@ -336,7 +358,7 @@ if __name__ == "__main__":
                           for i in window_lengths]
 
         boundaries = [i / skin_depth(args.plasma_density)
-                          for i in boundaries]
+                      for i in boundaries]
 
         # nx, ny, nz
 
@@ -408,7 +430,7 @@ if __name__ == "__main__":
         # Space
 
         file.write("\nspace\n{\n")
-        
+
         file.write(f"xmin(1:{args.dimension}) = ")
 
         for i in range(args.dimension):
@@ -424,7 +446,6 @@ if __name__ == "__main__":
             file.write(str(boundaries[1][i]) + ", ")
 
         file.write("\n")
-
 
         file.write(
             f"if_move(1:{args.dimension}) =  " +
@@ -532,13 +553,15 @@ if __name__ == "__main__":
         file.write('profile_type = "math_func",\n')
 
         # def up(x):
-        #     return np.tanh(( args.plasma_start - x )/ args.upramp,dtype=np.longdouble)
+        # return np.tanh(( args.plasma_start - x )/
+        # args.upramp,dtype=np.longdouble)
 
         # def down(x):
-        #     return np.tanh(( args.plasma_start + args.plasma_length - x )/ args.downramp,dtype=np.longdouble)
+        # return np.tanh(( args.plasma_start + args.plasma_length - x )/
+        # args.downramp,dtype=np.longdouble)
 
         # def doubleSig(x,sign=-1):
-        #     return  np.longdouble(-1 * sign * (-1 + up(x) ) * (1 + down(x) ) / 4)
+        # return  np.longdouble(-1 * sign * (-1 + up(x) ) * (1 + down(x) ) / 4)
 
         # num = optimize.minimize_scalar(doubleSig)
 
@@ -601,13 +624,11 @@ if __name__ == "__main__":
         file.write("}\n")
 
         file.write("\nspe_bound\n{\n")
-       
 
         file.write("type(1:2,1) = 'open', 'open',\n")
         file.write("type(1:2,2) = 'axial', 'open',\n")
 
         file.write("}\n")
-
 
         file.write('\ndiag_species\n{\n')
 
