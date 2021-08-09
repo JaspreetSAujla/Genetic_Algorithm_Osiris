@@ -1,8 +1,8 @@
+from scipy import optimize
 from constitutive_rels import skin_depth
 from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0, m_e
 import argparse
 import numpy as np
-import sympy as sp
 
 if __name__ == "__main__":
 
@@ -60,12 +60,7 @@ if __name__ == "__main__":
             "pgc",
             "hd_hybrid"])
 
-    simulation.add_argument(
-        "-n0",
-        "--plasma_density",
-        type=float,
-        default=0.0,
-        help="specifies the reference simulation plasma density for the simulation in units of [cm^-3].Default is 0.0.")
+    
 
     # Node number
 
@@ -178,10 +173,6 @@ if __name__ == "__main__":
         type=tuple,
         help="specifies the type of smoothing to perform in each direction.")
 
-    # diag_emf [TODO]
-
-    # particles
-
     particles = parser.add_argument_group(title="particles")
 
     particles.add_argument(
@@ -193,6 +184,13 @@ if __name__ == "__main__":
     # plasma_electrons
 
     plasma = parser.add_argument_group(title="plasma")
+    
+    plasma.add_argument(
+        "-n0",
+        "--plasma_density",
+        type=float,
+        default=0.0,
+        help="specifies the reference simulation plasma density for the simulation in units of [cm^-3].Default is 0.0.")
 
     plasma.add_argument(
         "--num_plasma_e",
@@ -230,6 +228,8 @@ if __name__ == "__main__":
         type=float,
         help="The length of the plasma.")
 
+    plasma.add_argument("--plasma_start",default=0,type=float,help="where the plasma starts")
+
     # beam
 
     beam = parser.add_argument_group(title="beam")
@@ -262,9 +262,9 @@ if __name__ == "__main__":
 
     beam.add_argument(
         "--beam_density",
-        default=4.26e21,
+        default=4.26e15,
         type=float,
-        help="the density of the beam in /m^3")
+        help="the density of the beam in [cm^-3]")
 
     # laser
 
@@ -297,8 +297,6 @@ if __name__ == "__main__":
         file.write("simulation\n{\n")
 
         file.write(f"algorithm = '{args.algorithm}',\n")
-
-        file.write(f"n0 = {args.plasma_density}, ! [cm^-3] \n")
 
         file.write("}\n")
 
@@ -534,8 +532,18 @@ if __name__ == "__main__":
 
         file.write('profile_type = "math_func",\n')
 
-        file.write(
-            f'math_func_expr = "if(x1 <= 119.75, 0.5 * (tanh((x1)/{args.upramp})+1), -0.5 * (tanh((x1-{args.plasma_length})/{args.downramp})-1))",\n')  # [TODO]
+        def up(x):
+            return np.tanh(( args.plasma_start - x )/ args.upramp,dtype=np.longdouble)
+
+        def down(x):
+            return np.tanh(( args.plasma_start + args.plasma_length - x )/ args.downramp,dtype=np.longdouble)
+
+        def doubleSig(x,sign=-1):
+            return  np.longdouble(-1 * sign * (-1 + up(x) ) * (1 + down(x) ) / 4)
+
+        num = optimize.minimize_scalar(doubleSig)
+
+        file.write(f'math_func_expr = "-1 * (-1 + tanh(({args.plasma_start} - x1) / {args.upramp}) * (1 + tanh( ({args.plasma_start + args.plasma_length} - x1) / {args.downramp}) ) / ({4 * doubleSig(num.x,sign=1)})",\n')
 
         file.write("}\n")
 
@@ -580,11 +588,19 @@ if __name__ == "__main__":
 
         file.write(f"density = {args.beam_density / args.plasma_density},\n")
 
-        # profile for profile
+        file.write('profile_type = "gaussian", "gaussian",\n')
+
+        file.write(f"gauss_center(1:{args.dimension}) = 0, 0,\n")
+        file.write(f"gauss_sigma(1:{args.dimension}) = 1, 1,\n")
 
         file.write("}\n")
 
-        # spe_bound, and diag_species
+        file.write("\nspe_bound\n{\n")
+        for i in range(args.dimension):
+            file.write(
+                f'type(1:{args.dimension},{i+1}) = "open"'.replace(
+                    "[", "").replace(
+                    "]", "") + ",\n")
 
         file.write('\ndiag_species\n{\n')
 

@@ -227,7 +227,7 @@ zpulse
         lon_fall =  1.99,
         lon_start = -0.01,
         per_type     = "gaussian",
-        per_w0       =  ,
+        per_w0       =  spotsize,
         per_focus    =  ,
 }
 

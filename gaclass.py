@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
@@ -89,13 +90,14 @@ class GeneticAlgorithm:
         """
         # Loops over for the number of generations specified.
         for i in range(self.max_generation_number):
+            os.system(f"mkdir Generation{i}")
             # Create a generation object.
             if i == 0:
                 # For the very first generation, use the populate
                 # method.
                 # Create the smoothing list.
                 self.generation_list.append(Generation(
-                    GenerationNum=self.current_generation))
+                    GenerationNum=i))
                 self.generation_list[i].populate(
                     History=self.individuals_history)
                 self.merit_smoothing = [[]
@@ -103,7 +105,7 @@ class GeneticAlgorithm:
             else:
                 # For every other generation, use the repopulate method.
                 self.generation_list.append(Generation(
-                    GenerationNum=self.current_generation))
+                    GenerationNum=i))
                 self.generation_list[i].repopulate(NewPop=self.generation_list[i - 1].newborn,
                                                    History=self.individuals_history)
 
@@ -114,13 +116,12 @@ class GeneticAlgorithm:
             self.data_plotter()
             self.generation_list[i].mating_stage(
                 History=self.individuals_history)
-            self.current_generation += 1
 
         # Tells the user what the best simulation parameters were.
         self.generation_list[-1].population.sort(
             key=operator.attrgetter('merit'), reverse=False)
-        print("The best simulation parameters achieved were:")
-        print(self.generation_list[i].population[0])
+        # print("The best simulation parameters achieved were:")
+        # print(self.generation_list[i].population[0])
 
         # Save the data into files and show final figure.
         np.save("GAData", self.data, allow_pickle=True)
@@ -199,14 +200,14 @@ class GeneticAlgorithm:
         plt.xticks(list(range(0, len(x_axis), 3)))
         plt.plot(x_axis, self.merit_y_axis, 'o')
 
-        # Plot the progression curve.
-        if len(x_average) == 1:
-            pass
-        else:
-            f = interpolate.interp1d(x_average, y_average)
-            x_fit = np.linspace(0, x_average[-1], int((x_average[-1] + 1) / 2))
-            y_fit = f(x_fit)
-            plt.semilogy(x_fit, y_fit, '-')
+        # # Plot the progression curve.
+        # if len(x_average) == 1:
+        #     pass
+        # else:
+        #     f = interpolate.interp1d(x_average, y_average)
+        #     x_fit = np.linspace(0, x_average[-1], int((x_average[-1] + 1) / 2))
+        #     y_fit = f(x_fit)
+        #     plt.semilogy(x_fit, y_fit, '-')
 
         plt.xlabel("Generation Number")
         plt.ylabel("Merit")

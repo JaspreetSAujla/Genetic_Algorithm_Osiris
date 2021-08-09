@@ -103,9 +103,9 @@ class Generation:
 
     parameter2 = ga_inputs['laser_spot_size']
 
-    parameter3 = ga_inputs['jitter_distance_range']
+    parameter3 = ga_inputs['down_ramp']
 
-    parameter4 = ga_inputs['laser_focus_range']
+    parameter4 = ga_inputs['up_ramp']
 
     def __init__(self, GenerationNum=0):
         """
@@ -175,6 +175,8 @@ class Generation:
                     random.uniform(
                         *Generation.parameter4)))
 
+            os.system(f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{indiv}.inp")
+
         # Calculates the merit for each individual.
         # Appends to History so we can keep track of parameters used.
         for i in range(len(self.population)):
@@ -221,6 +223,9 @@ class Generation:
             if self.population[i].merit is None:
                 self.population[i].merit_calc(self.input_file_list[i])
                 History.append(copy.deepcopy(self.population[i]))
+
+            os.system(f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")
+
 
     def mating_stage(self, History):
         """
@@ -328,3 +333,6 @@ class Generation:
                 break
 
         self.newborn.append(copy.deepcopy(new_individual))
+        
+        for i in range(self.num_of_individuals):
+            os.system(f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")

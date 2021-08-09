@@ -2,7 +2,6 @@ import h5py
 import numpy as np
 from os import listdir
 import re
-import copy
 
 
 class Individual:
@@ -80,11 +79,9 @@ class Individual:
         Method returns the values of the parameters and the merit value.
         """
         # For loop used to cycle through all the parameters.
-        for i in range(len(self.parameter_list)):
-            print(f"Parameter {i+1}: {self.parameter_list[i]}")
+        dataList = [f"Parameter {i+1}: {self.parameter_list[i]}" for i in range(len(self.parameter_list))]
 
-        print(f"Merit: {self.merit}")
-        return f""
+        return str(dataList)
 
     def merit_calc(self, input_file):
         """
@@ -109,12 +106,13 @@ class Individual:
         # self.change_file(input_file)
         # The 2 methods below can be uncommented once the implementation
         # for the run_simulation method is complete.
-        # self.run_simulation()
+        self.run_simulation()
         # self.extract_merit()
         # self.reverse_change(input_file)
         # The self.merit on the line below can be deleted once you
         # have the extract_merit and run_simulation method working.
         self.merit = sum(self.parameter_list)
+
 
     def change_file(self, input_file):
         """
