@@ -5,7 +5,16 @@ import operator
 import numpy as np
 import json
 import os
+from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0, m_e
 
+def plasma_frequency(plasma_density):
+
+    return e * np.sqrt(plasma_density / (m_e * eps0))
+
+
+def skin_depth(plasma_density):
+
+    return np.sqrt(m_e / (plasma_density * mu0)) / e
 
 class Generation:
     """
@@ -107,6 +116,10 @@ class Generation:
 
     parameter4 = ga_inputs['up_ramp']
 
+    parameter5 = ga_inputs['electron_beam_length']
+
+    parameter6 = ga_inputs['electron_beam_radius']
+
     def __init__(self, GenerationNum=0):
         """
         This method defines all the intial variables when a generation is
@@ -143,8 +156,7 @@ class Generation:
         self.parameter_mixing_list = []
         self.newborn = []
         self.input_file_list = [
-            f"./inputfiles/inputfile{(i%9)+1}.inp" for i in range(self.num_of_individuals)]
-        # print("Generation created.")
+            f"Generation{self.generation}/inputfile{i}.inp" for i in range(self.num_of_individuals)]
 
     def __str__(self):
         """
@@ -173,7 +185,13 @@ class Generation:
                     random.uniform(
                         *Generation.parameter3),
                     random.uniform(
-                        *Generation.parameter4)))
+                        *Generation.parameter4),
+                    random.uniform(
+                        *Generation.parameter5),
+                    random.uniform(
+                        *Generation.parameter6)),
+                        
+                        )
 
             os.system(
                 rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{indiv}.inp")
@@ -183,22 +201,6 @@ class Generation:
         for i in range(len(self.population)):
             self.population[i].merit_calc(self.input_file_list[i])
             History.append(copy.deepcopy(self.population[i]))
-
-        # print("Generation populated.")
-
-    def output_current_status(self):
-        """
-        Prints the current progress of the algorithm.
-        Uses for loop to iterate through each simulation.
-        """
-
-        os.system("clear")
-
-        print(self)
-
-        for i in range(len(self.population)):
-            print(f"Simulation {i+1}:")
-            print(f"{self.population[i]}")
 
     def repopulate(self, NewPop, History):
         """
@@ -226,7 +228,7 @@ class Generation:
                 History.append(copy.deepcopy(self.population[i]))
 
             os.system(
-                rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")
+                f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp -L {self.parameter5 / skin_depth(self.parameter1)} -R {self.parameter6 / skin_depth(self.parameter1)} -n0 {self.parameter1} --upramp {self.parameter4} --downramp {self.parameter3}")
 
     def mating_stage(self, History):
         """
@@ -323,7 +325,13 @@ class Generation:
                 Generation.parameter3) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[2].pop(),
             random.uniform(
                     *
-                    Generation.parameter4) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[3].pop())
+                    Generation.parameter4) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[3].pop(),
+            random.uniform(
+                    *
+                    Generation.parameter5) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[4].pop(),
+            random.uniform(
+                    *
+                    Generation.parameter6) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[5].pop())
 
         # Iterate over History list to see if the individual has been
         # used before.

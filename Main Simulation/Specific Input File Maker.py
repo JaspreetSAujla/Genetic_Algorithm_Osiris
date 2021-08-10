@@ -90,14 +90,6 @@ if __name__ == "__main__":
             "false",
             "false"))
 
-    # Key values
-
-    parser.add_argument(
-        "--laser_wavelength",
-        type=float,
-        help="the wavelength of the laser, in metres",
-        default=8e-7)
-
     # Window span
 
     space = parser.add_argument_group(title="space")
@@ -111,7 +103,7 @@ if __name__ == "__main__":
     space.add_argument(
         "--if_move",
         type=str,
-        help="pecifies a whether the code should use a moving window at the speed of light in the specified directions. Default is false.",
+        help="specifies a whether the code should use a moving window at the speed of light in the specified directions. Default is false.",
         default=(
             "true",
             "false"))
@@ -197,7 +189,7 @@ if __name__ == "__main__":
         "-n0",
         "--plasma_density",
         type=float,
-        default=2e24,
+        default=1.25e24,
         help="specifies the reference simulation plasma density for the simulation in units of [m^-3].Default is 0.0.")
 
     plasma.add_argument(
@@ -214,21 +206,21 @@ if __name__ == "__main__":
 
     plasma.add_argument(
         "--upramp",
-        default=6.6489,
+        default=1.5e-3,
         type=float,
-        help="the length of the upramp to maximum plasma density")
+        help="the length of the upramp to maximum plasma density, in [m]")
 
     plasma.add_argument(
         "--downramp",
-        default=6.6489,
+        default=1.5e-3,
         type=float,
-        help="the length of the downramp to minimum plasma density")
+        help="the length of the downramp to minimum plasma density, in [m]")
 
     plasma.add_argument(
         "--plasma_length",
-        default=1,
+        default=6e-3,
         type=float,
-        help="The length of the plasma.")
+        help="The length of the plasma in [m]")
 
     plasma.add_argument(
         "--plasma_start",
@@ -267,10 +259,21 @@ if __name__ == "__main__":
         help="specifies the energy of the injected beam, in [MeV]. Default is 50MeV")
 
     beam.add_argument(
-        "--beam_density",
-        default=4.26e15,
+
+        "-L",
+        "--beam_length",
         type=float,
-        help="the density of the beam in [cm^-3]")
+        default=4e-4,
+        help="the length of the electron beam"
+    )
+
+    beam.add_argument(
+        "-R",
+        "--beam_radius",
+        type=float,
+        default=3e-5,
+        help="beam radius"
+    )
 
     # laser
 
@@ -282,6 +285,20 @@ if __name__ == "__main__":
         default=0,
         type=float,
         help="specify the peak laser intensity in [W * cm^-2]")
+
+    laser.add_argument(
+        "--laser_wavelength",
+        type=float,
+        help="the wavelength of the laser, in metres",
+        default=8e-7)
+
+    laser.add_argument(
+        "-w0",
+        "--laser_spot_size",
+        type=float,
+        default=20e-6
+    )
+
 
     # currents
 
@@ -323,9 +340,7 @@ if __name__ == "__main__":
                 ".").replace(
                 "')",
                 ".").replace(
-                "', '",
-                "").replace(
-                    ",",
+                    "', '",
                     ".,.") +
             ",\n")
 
@@ -552,22 +567,22 @@ if __name__ == "__main__":
 
         file.write('profile_type = "math_func",\n')
 
-        # def up(x):
-        # return np.tanh(( args.plasma_start - x )/
-        # args.upramp,dtype=np.longdouble)
+        def up(x):
+            return np.tanh((x -  4*args.upramp )/
+        args.upramp,dtype=np.longdouble)
 
-        # def down(x):
-        # return np.tanh(( args.plasma_start + args.plasma_length - x )/
-        # args.downramp,dtype=np.longdouble)
+        def down(x):
+            return np.tanh((4*(2*args.upramp - args.downramp) + args.plasma_length - x)/
+        args.downramp,dtype=np.longdouble)
 
-        # def doubleSig(x,sign=-1):
-        # return  np.longdouble(-1 * sign * (-1 + up(x) ) * (1 + down(x) ) / 4)
+        def doubleSig(x,sign=-1):
+            return  np.longdouble(sign * (1 + up(x) ) * (1 + down(x) ) / 4)
 
-        # num = optimize.minimize_scalar(doubleSig)
+        num = optimize.minimize_scalar(doubleSig)
 
-        # file.write(f'math_func_expr = "-1 * (-1 + tanh(({args.plasma_start} - x1) / {args.upramp}) * (1 + tanh( ({args.plasma_start + args.plasma_length} - x1) / {args.downramp}) ) / ({4 * doubleSig(num.x,sign=1)})",\n')
+        file.write(f'math_func_expr = "if(x1 < 0.0, 0.0, if(x1 <= {args.plasma_length + 4*(args.downramp + args.upramp)}, (1 + tanh((x1 - {4*args.upramp}) / {args.upramp})) * (1 + tanh( ({4*(2*args.upramp - args.downramp) + args.plasma_length} - x1) / {args.downramp} ) / ({4 * doubleSig(num.x,sign=1)})),0.0))",\n')
 
-        file.write('math_func_expr = "if(x1 < 0.0, 0.0, if(x1 <= 265.9574, 0.5*(tanh((x1-26.5957)/6.6489)+1),if(x1 <= 531.9149, -0.5*(tanh((x1-26.6957-531.9149+53.1915)/6.6489)-1), 0.0)))",\n')
+        # file.write(f'math_func_expr = "if(x1 < 0.0, 0.0, if(x1 <= {args.plasma_length / 2}, 0.5*(tanh((x1-{4*args.upramp})/{args.upramp})+1),if(x1 <= {args.plasma_length}, -0.5*(tanh((x1- {4*(args.downramp - args.upramp)-args.plasma_length})/{args.downramp})-1), 0.0)))",\n')
 
         file.write("}\n")
 
@@ -602,7 +617,7 @@ if __name__ == "__main__":
 
         file.write("\nudist\n{\n")
 
-        file.write("use_classical_uadd = .true.,")
+        file.write("use_classical_uadd = .true.,\n")
 
         file.write(
             f"uth(1:3) = {args.beam_thermal_speed}, {args.beam_thermal_speed}, {args.beam_thermal_speed},\n")
@@ -614,12 +629,14 @@ if __name__ == "__main__":
 
         file.write("\nprofile\n{\n")
 
-        file.write(f"density = {args.beam_density / args.plasma_density},\n")
+        file.write("den_min = 1.0d-7,\n")
+
+        file.write(f"density = {args.beam_charge * skin_depth(args.plasma_density)**3 / (e * (2*np.pi)**1.5 * args.beam_length * args.beam_radius**2 * args.plasma_density)},\n")
 
         file.write('profile_type = "gaussian", "gaussian",\n')
 
         file.write(f"gauss_center(1:{args.dimension}) = 0, 0,\n")
-        file.write(f"gauss_sigma(1:{args.dimension}) = 1, 1,\n")
+        file.write(f"gauss_sigma(1:{args.dimension}) = {args.beam_length / skin_depth(args.plasma_density)}, {args.beam_radius/ skin_depth(args.plasma_density)},\n")
 
         file.write("}\n")
 
@@ -666,6 +683,10 @@ if __name__ == "__main__":
         file.write("lon_rise = ,\n")
         file.write("lon_fall = ,\n")
         file.write("lon_start = ,\n")
+        file.write('per_type = "gaussian",\n')
+        file.write("per_center = 0.0,\n")
+        file.write(f"per_w0 = {args.laser_spot_size / skin_depth(args.plasma_density)},\n")
+        file.write(f"per_focus = ,\n")
 
         file.write("}\n")
 

@@ -114,42 +114,6 @@ class Individual:
         # have the extract_merit and run_simulation method working.
         self.merit = sum(self.parameter_list)
 
-    def change_file(self, input_file):
-        """
-        Method uses the input file that is passed as an argument
-        and changes the appropriate text within the file so that
-        the new parameters can be used in the simulation.
-
-        Parameters:
-            input_file = Passes in the input file that is changed to
-                         add the new parameters for the simulation.
-
-        Variables:
-            open_file = This variable is used to open the input file
-                        so that it can be read from and written to.
-
-            read_file = This variable reads the open_file variable.
-
-            change = Uses the read_file variable to add the new parameters,
-                     which are then written back into the open_file
-                     variable.
-        """
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        change = read_file.replace(
-            'density         = ',
-            f'density         = {self.parameter_list[0]}').replace(
-            'per_w0       =  ',
-            f'per_w0       =  {self.parameter_list[1]}').replace(
-            'gauss_center(1:2) = ',
-            f'gauss_center(1:2) = {self.parameter_list[2]}').replace(
-                'per_focus    =  ',
-            f'per_focus    =  {self.parameter_list[3]}')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(change)
-        open_file.close()
-
     def run_simulation(self):
         """
         This method will run the simulation, which will return
@@ -214,38 +178,3 @@ class Individual:
 
         standard_deviation = np.sqrt(sum(q * (ene - ave)**2 / tot_charge))
         self.merit = standard_deviation / ave
-
-    def reverse_change(self, input_file):
-        """
-        Restores the input files to their original state so that they
-        can be used for the next generation.
-
-        Parameters:
-            input_file = Passes in the input file that is used to run the
-                         simulation.
-
-        Variables:
-            open_file = This variable is used to open the input file
-                        so that it can be read from and written to.
-
-            read_file = This variable reads the open_file variable.
-
-            reverse = Uses the read_file variable to restore the parameters,
-                      which are then written back into the open_file
-                      variable.
-        """
-        open_file = open(input_file, "rt")
-        read_file = open_file.read()
-        reverse = read_file.replace(
-            f'density         = {self.parameter_list[0]}',
-            'density         = ').replace(
-            f'per_w0       =  {self.parameter_list[1]}',
-            'per_w0       =  ').replace(
-            f'gauss_center(1:2) = {self.parameter_list[2]}',
-            'gauss_center(1:2) = ').replace(
-                f'per_focus    =  {self.parameter_list[3]}',
-            'per_focus    =  ')
-        open_file.close()
-        open_file = open(input_file, "wt")
-        open_file.write(reverse)
-        open_file.close()
