@@ -7,6 +7,7 @@ import json
 import os
 from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0, m_e
 
+
 def plasma_frequency(plasma_density):
 
     return e * np.sqrt(plasma_density / (m_e * eps0))
@@ -15,6 +16,7 @@ def plasma_frequency(plasma_density):
 def skin_depth(plasma_density):
 
     return np.sqrt(m_e / (plasma_density * mu0)) / e
+
 
 class Generation:
     """
@@ -190,8 +192,8 @@ class Generation:
                         *Generation.parameter5),
                     random.uniform(
                         *Generation.parameter6)),
-                        
-                        )
+
+            )
 
             os.system(
                 rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{indiv}.inp")

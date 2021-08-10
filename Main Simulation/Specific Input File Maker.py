@@ -299,7 +299,6 @@ if __name__ == "__main__":
         default=20e-6
     )
 
-
     # currents
 
     current = parser.add_argument_group(title="current")
@@ -568,19 +567,25 @@ if __name__ == "__main__":
         file.write('profile_type = "math_func",\n')
 
         def up(x):
-            return np.tanh((x -  4*args.upramp )/
-        args.upramp,dtype=np.longdouble)
+            return np.tanh((x - 4 * args.upramp) /
+                           args.upramp, dtype=np.longdouble)
 
         def down(x):
-            return np.tanh((4*(2*args.upramp - args.downramp) + args.plasma_length - x)/
-        args.downramp,dtype=np.longdouble)
+            return np.tanh((4 *
+                            (2 *
+                             args.upramp -
+                             args.downramp) +
+                            args.plasma_length -
+                            x) /
+                           args.downramp, dtype=np.longdouble)
 
-        def doubleSig(x,sign=-1):
-            return  np.longdouble(sign * (1 + up(x) ) * (1 + down(x) ) / 4)
+        def doubleSig(x, sign=-1):
+            return np.longdouble(sign * (1 + up(x)) * (1 + down(x)) / 4)
 
         num = optimize.minimize_scalar(doubleSig)
 
-        file.write(f'math_func_expr = "if(x1 < 0.0, 0.0, if(x1 <= {args.plasma_length + 4*(args.downramp + args.upramp)}, (1 + tanh((x1 - {4*args.upramp}) / {args.upramp})) * (1 + tanh( ({4*(2*args.upramp - args.downramp) + args.plasma_length} - x1) / {args.downramp} ) / ({4 * doubleSig(num.x,sign=1)})),0.0))",\n')
+        file.write(
+            f'math_func_expr = "if(x1 < 0.0, 0.0, if(x1 <= {args.plasma_length + 4*(args.downramp + args.upramp)}, (1 + tanh((x1 - {4*args.upramp}) / {args.upramp})) * (1 + tanh( ({4*(2*args.upramp - args.downramp) + args.plasma_length} - x1) / {args.downramp} ) / ({4 * doubleSig(num.x,sign=1)})),0.0))",\n')
 
         # file.write(f'math_func_expr = "if(x1 < 0.0, 0.0, if(x1 <= {args.plasma_length / 2}, 0.5*(tanh((x1-{4*args.upramp})/{args.upramp})+1),if(x1 <= {args.plasma_length}, -0.5*(tanh((x1- {4*(args.downramp - args.upramp)-args.plasma_length})/{args.downramp})-1), 0.0)))",\n')
 
@@ -631,12 +636,14 @@ if __name__ == "__main__":
 
         file.write("den_min = 1.0d-7,\n")
 
-        file.write(f"density = {args.beam_charge * skin_depth(args.plasma_density)**3 / (e * (2*np.pi)**1.5 * args.beam_length * args.beam_radius**2 * args.plasma_density)},\n")
+        file.write(
+            f"density = {args.beam_charge * skin_depth(args.plasma_density)**3 / (e * (2*np.pi)**1.5 * args.beam_length * args.beam_radius**2 * args.plasma_density)},\n")
 
         file.write('profile_type = "gaussian", "gaussian",\n')
 
         file.write(f"gauss_center(1:{args.dimension}) = 0, 0,\n")
-        file.write(f"gauss_sigma(1:{args.dimension}) = {args.beam_length / skin_depth(args.plasma_density)}, {args.beam_radius/ skin_depth(args.plasma_density)},\n")
+        file.write(
+            f"gauss_sigma(1:{args.dimension}) = {args.beam_length / skin_depth(args.plasma_density)}, {args.beam_radius/ skin_depth(args.plasma_density)},\n")
 
         file.write("}\n")
 
@@ -685,7 +692,8 @@ if __name__ == "__main__":
         file.write("lon_start = ,\n")
         file.write('per_type = "gaussian",\n')
         file.write("per_center = 0.0,\n")
-        file.write(f"per_w0 = {args.laser_spot_size / skin_depth(args.plasma_density)},\n")
+        file.write(
+            f"per_w0 = {args.laser_spot_size / skin_depth(args.plasma_density)},\n")
         file.write(f"per_focus = ,\n")
 
         file.write("}\n")
