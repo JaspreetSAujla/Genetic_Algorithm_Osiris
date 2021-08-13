@@ -5,8 +5,7 @@ import operator
 import numpy as np
 import json
 import os
-from scipy.constants import e, c, mu_0 as mu0, epsilon_0 as eps0, m_e
-
+from scipy.constants import e, mu_0 as mu0, epsilon_0 as eps0, m_e
 
 def plasma_frequency(plasma_density):
 
@@ -121,6 +120,8 @@ class Generation:
     parameter5 = ga_inputs['electron_beam_length']
 
     parameter6 = ga_inputs['electron_beam_radius']
+    
+    parameter7 = ga_inputs['focus_position']
 
     def __init__(self, GenerationNum=0):
         """
@@ -178,6 +179,7 @@ class Generation:
         """
         # Use for loop to create all the individuals.
         for indiv in range(self.num_of_individuals):
+            os.system(f"mkdir Generation{self.generation}/Invididual{indiv}")
             self.population.append(
                 Individual(
                     random.uniform(
@@ -191,18 +193,25 @@ class Generation:
                     random.uniform(
                         *Generation.parameter5),
                     random.uniform(
-                        *Generation.parameter6)),
+                        *Generation.parameter6),
+                    random.uniform(
+                        *Generation.parameter7)),
 
             )
-
+            
             os.system(
-                rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{indiv}.inp")
+                f"python Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Invididual{indiv}/Individual{self.generation*self.num_of_individuals + indiv}.inp --cores_per_node 128 -n0 {self.population[-1].parameter_list[0]} --downramp {self.population[-1].parameter_list[2]} --upramp {self.population[-1].parameter_list[3]} -E 31.3 -L {self.population[-1].parameter_list[4]} -R {self.population[-1].parameter_list[5]} -w0 {self.population[-1].parameter_list[1]} --focus_position {self.population[-1].parameter_list[6]}")
+            
+            os.system(f"cp jobscript.pbs Generation{self.generation}/Invididual{indiv}/jobscript{self.generation*self.num_of_individuals + indiv}.pbs")
 
-        # Calculates the merit for each individual.
-        # Appends to History so we can keep track of parameters used.
-        for i in range(len(self.population)):
-            self.population[i].merit_calc(self.input_file_list[i])
-            History.append(copy.deepcopy(self.population[i]))
+            os.chdir(f"Generation{self.generation}/Invididual{indiv}")
+
+            self.population[-1].merit_calc(self.generation*self.num_of_individuals + indiv,f"Individual{self.generation*self.num_of_individuals + indiv}.inp")
+
+            os.chdir("..")
+            os.chdir("..")
+
+            History.append(copy.deepcopy(self.population[-1]))
 
     def repopulate(self, NewPop, History):
         """
@@ -225,12 +234,37 @@ class Generation:
         # Checks if there is a merit value already.
         # Calculates merit for new individuals.
         for i in range(len(self.population)):
+            os.system(f"mkdir Generation{self.generation}/Invididual{i}")
+
             if self.population[i].merit is None:
-                self.population[i].merit_calc(self.input_file_list[i])
+
+                os.system(
+                f"python Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Invididual{i}/Individual{self.generation*self.num_of_individuals + i}.inp --cores_per_node 128 -n0 {self.population[-1].parameter_list[0]} --downramp {self.population[-1].parameter_list[2]} --upramp {self.population[-1].parameter_list[3]} -E 31.3 -L {self.population[-1].parameter_list[4]} -R {self.population[-1].parameter_list[5]} -w0 {self.population[-1].parameter_list[1]} --focus_position {self.population[-1].parameter_list[6]}")
+            
+                os.system(f"cp jobscript.pbs Generation{self.generation}/Invididual{i}/jobscript{self.generation*self.num_of_individuals + i}.pbs")
+
+                os.chdir(f"Generation{self.generation}/Invididual{i}")
+
+                self.population[i].merit_calc(self.generation*self.num_of_individuals + i,f"Individual{self.generation*self.num_of_individuals + i}.inp")
+
+                os.chdir("..")
+                os.chdir("..")
+
                 History.append(copy.deepcopy(self.population[i]))
 
+                continue
+            
             os.system(
-                f"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp -L {self.parameter5 / skin_depth(self.parameter1)} -R {self.parameter6 / skin_depth(self.parameter1)} -n0 {self.parameter1} --upramp {self.parameter4} --downramp {self.parameter3}")
+                f"python Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Invididual{i}/Individual{self.generation*self.num_of_individuals + i}.inp --cores_per_node 128 -n0 {self.population[-1].parameter_list[0]} --downramp {self.population[-1].parameter_list[2]} --upramp {self.population[-1].parameter_list[3]} -E 31.3 -L {self.population[-1].parameter_list[4]} -R {self.population[-1].parameter_list[5]} -w0 {self.population[-1].parameter_list[1]} --focus_position {self.population[-1].parameter_list[6]}")
+
+            os.system(f"cp jobscript.pbs Generation{self.generation}/Invididual{i}/jobscript{self.generation*self.num_of_individuals + i}.pbs")
+
+            os.chdir(f"Generation{self.generation}/Invididual{i}")
+
+            self.population[-1].create_jobscript(self.generation*self.num_of_individuals + i,f"Individual{self.generation*self.num_of_individuals + i}.inp")
+
+            os.chdir("..")
+            os.chdir("..")
 
     def mating_stage(self, History):
         """
@@ -311,6 +345,7 @@ class Generation:
 
             new_individual = Stores the new individual that is created.
         """
+
         # Shuffle each sublist in the mixing list.
         for j in range(len(self.parameter_mixing_list)):
             random.shuffle(self.parameter_mixing_list[j])
@@ -333,8 +368,11 @@ class Generation:
                     Generation.parameter5) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[4].pop(),
             random.uniform(
                     *
-                    Generation.parameter6) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[5].pop())
-
+                    Generation.parameter6) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[5].pop(),
+            random.uniform(
+            *
+            Generation.parameter7) if np.random.random() <= self.mutation_rate else self.parameter_mixing_list[6].pop())
+        
         # Iterate over History list to see if the individual has been
         # used before.
         # If it has, reuse the individual.
@@ -344,7 +382,3 @@ class Generation:
                 break
 
         self.newborn.append(copy.deepcopy(new_individual))
-
-        for i in range(self.num_of_individuals):
-            os.system(
-                rf"python Main\ Simulation/Specific\ Input\ File\ Maker.py -f Generation{self.generation}/Individual{i}.inp")

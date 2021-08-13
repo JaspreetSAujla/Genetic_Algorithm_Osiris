@@ -198,18 +198,19 @@ class GeneticAlgorithm:
         for i in range(len(self.generation_smoothing)):
             y_average.append(np.average(self.merit_smoothing[i]))
         plt.xticks(list(range(0, len(x_axis), 3)))
-        plt.plot(x_axis, self.merit_y_axis, 'o')
+        plt.semilogy(x_axis, self.merit_y_axis, 'o')
 
-        # # Plot the progression curve.
-        # if len(x_average) == 1:
-        #     pass
-        # else:
-        #     f = interpolate.interp1d(x_average, y_average)
-        #     x_fit = np.linspace(0, x_average[-1], int((x_average[-1] + 1) / 2))
-        #     y_fit = f(x_fit)
-        #     plt.semilogy(x_fit, y_fit, '-')
+        # Plot the progression curve.
+        if len(x_average) == 1:
+            pass
+        else:
+            f = interpolate.interp1d(x_average, y_average)
+            x_fit = np.linspace(0, x_average[-1], int((x_average[-1] + 1) / 2))
+            y_fit = f(x_fit)
+            plt.semilogy(x_fit, y_fit, '-')
 
         plt.xlabel("Generation Number")
         plt.ylabel("Merit")
-        plt.title("Progression of the Merit as Generation Number Increases.")
+        plt.axhline(4.725e-6)
+        plt.title(f"Progression of the Merit as Generation Number Increases. R = {self.generation_list[-1].mutation_rate}")
         plt.savefig("MeritProgression.png")

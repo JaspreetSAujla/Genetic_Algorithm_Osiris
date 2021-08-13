@@ -1,7 +1,9 @@
+import os
 import h5py
 import numpy as np
 from os import listdir
 import re
+import time
 
 
 class Individual:
@@ -63,13 +65,13 @@ class Individual:
         into a tuple called ParameterList. This is then turned into a
         list.
 
-        Variables:
-            self.parameter_list = Takes the argument that is passed
-                                  from the method and converts the tuple
-                                  into a list.
+        Parameters
+        ----------
+        self.parameter_list
+            Takes the argument that is passed from the method and converts the tuple   into a list.
 
-            self.merit = Stores the merit value. Set to None as there is
-                         no merit calculated when the class in initialised.
+        self.merit
+            Stores the merit value. Set to None as there is no merit calculated when the class in initialised.
         """
         self.parameter_list = list(ParameterList)
         self.merit = None
@@ -84,7 +86,7 @@ class Individual:
 
         return str(dataList)
 
-    def merit_calc(self, input_file):
+    def merit_calc(self,number,inputFile):
         """
         Method calculates the merit value used by changing the
         input file(s) with the desired parameters, running the
@@ -104,48 +106,53 @@ class Individual:
             input_file = Passes in the input file that is used
                          to run the simulation.
         """
-        # self.change_file(input_file)
-        # The 2 methods below can be uncommented once the implementation
-        # for the run_simulation method is complete.
-        self.run_simulation()
-        # self.extract_merit()
-        # self.reverse_change(input_file)
-        # The self.merit on the line below can be deleted once you
-        # have the extract_merit and run_simulation method working.
-        self.merit = sum(self.parameter_list)
 
-    def run_simulation(self):
+        self.run_simulation(number,inputFile)
+        
+        # self.extract_merit()
+        self.merit = np.prod(self.parameter_list)
+
+    def create_jobscript(self,number,inputFile):
         """
-        This method will run the simulation, which will return
-        some data files that can be used to extract the merit
-        value.
+        Creates the individual's jobscript file
+        
+        Parameters
+        ----------
+        number : int
+            Universal identifier for the individual
         """
-        pass
+        while not os.path.exists(f"jobscript{number}.pbs"):
+            time.sleep(1)
+        os.system(f"sed -i 's/-N q3d_no_beam/-N Individual{number}/g' jobscript{number}.pbs")
+        os.system(f"sed -i 's+/work/dp152/dp152/dc-clos1/q3d_no_beam.inp+{os.getcwd()}/{inputFile}+g' jobscript{number}.pbs")
+
+    def run_simulation(self,number,inputFile):
+        """
+        Takes the individual, creates the input file, and runs the simulation.
+        """
+        self.create_jobscript(number,inputFile)
+        os.system(f"qsub jobscript{number}.pbs")
 
     def list_files(self, directory):
         """
-        This method takes the data files that are returned from the
+        Takes the data files that are returned from the
         simulation and places them into a tuple.
 
-        Parameters:
-            directory = ...
-
-        Variables:
-            s0 = ...
-
-            e0 = ...
+        Parameters
+        ----------
+        directory : str
+            the working directory.
         """
-        s0 = 'RAW-Beam'
-        e0 = '.h5'
+        
+        s0 = 'RAW-Beam' # String target
+        
+        e0 = '.h5' # File extension
+
         return (f for f in listdir(directory) if (s0 in f and e0 in f))
 
-    def extract_merit(self):
+    def extract_merit(self,inputFile):
         """
-        This method goes through the data files and extracts the
-        merit value.
-
-        Note: Elisabetta gave me this method, so I am not exactly
-              sure how it works.
+        Extracts the merit value from the individual's RAW data
         """
         dirname = 'MS/RAW/Beam'
         files = self.list_files(dirname)
@@ -153,7 +160,6 @@ class Individual:
 
         for f in files:
             fullfilename = dirname + '/' + f
-            print(fullfilename)
             try:
                 it_new = int(
                     re.search(
@@ -165,16 +171,14 @@ class Individual:
             except BaseException:
                 pass
 
-        hf = h5py.File(myfile, 'r')
-        #q = hf.get('q').value
-        #ene = hf.get('ene').value
-        q = np.abs(hf['q'][:])
-        ene = hf['ene'][:]
+        hf = h5py.File(myfile, 'r') # Read in the file
+        q = np.abs(hf['q'][:]) # Strip the charge data
+        ene = hf['ene'][:] # Strip the energy data
 
-        qene = q * ene
-        tot_qene = sum(qene)
-        tot_charge = sum(q)
-        ave = tot_qene / tot_charge
+        qene = q * ene # Calculates the charge-energy product
+        tot_qene = sum(qene) # The total charge energy product
+        tot_charge = sum(q) # The total charge
+        ave = tot_qene / tot_charge # Weighted average
 
-        standard_deviation = np.sqrt(sum(q * (ene - ave)**2 / tot_charge))
-        self.merit = standard_deviation / ave
+        standard_deviation = np.sqrt(sum(q * (ene - ave)**2 / tot_charge)) # Weighted error
+        self.merit = standard_deviation / ave # Merit value

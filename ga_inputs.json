@@ -1,11 +1,13 @@
 {
-    "max_generation_number" : 4, 
-    "num_of_individuals" : 10, 
+    "max_generation_number" : 1, 
+    "num_of_individuals" : 1, 
     "mutation_rate": 0.001,
-    "plasma_density" : [1.0e16,1.0e19], 
+    "plasma_density" : [2e23,6e23], 
     "laser_spot_size" : [4e-6,4e-5],
-    "down_ramp": [1e-5,1e-3],
-    "up_ramp": [1e-5,1e-3],
-    "electron_beam_length" : [1e-6,4.5e-4],
-    "electron_beam_radius": [1e-7,3.0e-5]
+    "down_ramp": [3.75e-5,3.75e-4],
+    "up_ramp": [3.75e-5,3.75e-4],
+    "electron_beam_length" : [4e-7,4e-6],
+    "electron_beam_radius": [3e-6,30e-6],
+    "focus_position": [3.5e-3,5.5e-3]
 }
+
